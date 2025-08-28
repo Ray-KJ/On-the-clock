@@ -17,6 +17,46 @@ export type Tier = {
   price: number;
 };
 
+const RETRYABLE_STATUS = new Set([502, 503, 504]);
+const RETRY_DELAYS_MS = [200, 500, 1000];
+
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(input: RequestInfo | URL, init: RequestInit & { timeoutMs?: number } = {}, maxRetries = 3) {
+  const timeoutMs = init.timeoutMs ?? 4000;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const abort = new AbortController();
+    const timer = setTimeout(() => abort.abort(), timeoutMs);
+    try {
+      const res = await fetch(input, { ...init, signal: abort.signal });
+      clearTimeout(timer);
+      if (!res.ok) {
+        // Retry on transient server errors
+        if (RETRYABLE_STATUS.has(res.status) && attempt < maxRetries) {
+          await sleep(RETRY_DELAYS_MS[Math.min(attempt, RETRY_DELAYS_MS.length - 1)]);
+          continue;
+        }
+        throw new Error(await res.text());
+      }
+      return res;
+    } catch (err: any) {
+      clearTimeout(timer);
+      // Network-level errors (e.g., ECONNREFUSED during server reload)
+      const isAbort = err?.name === "AbortError";
+      const isNetwork = err instanceof TypeError || /Failed to fetch|NetworkError|ECONNREFUSED/i.test(String(err?.message ?? ""));
+      if ((isAbort || isNetwork) && attempt < maxRetries) {
+        await sleep(RETRY_DELAYS_MS[Math.min(attempt, RETRY_DELAYS_MS.length - 1)]);
+        continue;
+      }
+      throw err;
+    }
+  }
+  // Should never reach here
+  throw new Error("Request failed after retries");
+}
+
 export const api = {
   getTiers: async (creatorId: string): Promise<Tier[]> => {
     // Replace with real API call
@@ -36,46 +76,41 @@ export const api = {
   },
   get: async (url: string, service: "membership" | "content" = "membership") => {
     const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetch(`${base}${url}`, { headers: getHeaders() });
-    if (!res.ok) throw new Error(await res.text());
+    const res = await fetchWithRetry(`${base}${url}`, { headers: getHeaders() });
     return res.json();
   },
   post: async (url: string, data: any, service: "membership" | "content" = "membership") => {
     const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetch(`${base}${url}`, {
+    const res = await fetchWithRetry(`${base}${url}`, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error(await res.text());
     return res.json();
   },
   put: async (url: string, data: any, service: "membership" | "content" = "membership") => {
     const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetch(`${base}${url}`, {
+    const res = await fetchWithRetry(`${base}${url}`, {
       method: "PUT",
       headers: getHeaders(),
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error(await res.text());
     return res.json();
   },
   delete: async (url: string, service: "membership" | "content" = "membership") => {
     const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetch(`${base}${url}`, {
+    const res = await fetchWithRetry(`${base}${url}`, {
       method: "DELETE",
       headers: getHeaders(),
     });
-    if (!res.ok) throw new Error(await res.text());
     return res.json();
   },
   upload: async (url: string, formData: FormData) => {
-    const res = await fetch(`${CONTENT_API_URL}${url}`, {
+    const res = await fetchWithRetry(`${CONTENT_API_URL}${url}`, {
       method: "POST",
       headers: API_TOKEN ? { "Authorization": `Bearer ${API_TOKEN}` } : {},
       body: formData,
     });
-    if (!res.ok) throw new Error(await res.text());
     return res.json();
   },
 };

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { RevenueChart } from "@/components/RevenueChart";
+import { useTiers } from "@/hooks/use-tiers";
 import {
   DollarSign,
   TrendingUp,
@@ -21,27 +22,48 @@ import {
 } from "lucide-react";
 
 const RevenuePage = () => {
-  // --- Mock tier breakdown (three entries) ---
-  const tiers = [
+  // --- Tiers source (live via API with fallback) ---
+  const creatorId = "creator1";
+  const { tiers: liveTiers } = useTiers(creatorId);
+  const defaultTiers = [
     {
-      tier: "Basic Fan ($4.99)",
+      name: "Basic Fan",
       price: 4.99,
-      subscribers: 1200,
+      subscriberCount: 1200,
       color: "bg-primary",
     },
     {
-      tier: "Super Fan ($9.99)",
+      name: "Super Fan",
       price: 9.99,
-      subscribers: 500,
+      subscriberCount: 500,
       color: "bg-secondary",
     },
     {
-      tier: "VIP Circle ($24.99)",
+      name: "VIP Circle",
       price: 24.99,
-      subscribers: 90,
+      subscriberCount: 90,
       color: "bg-gradient-primary",
     },
   ];
+  const tiers =
+    liveTiers && liveTiers.length
+      ? liveTiers.map((t, idx) => ({
+          tier: `${t.name} ($${t.price})`,
+          price: t.price,
+          subscribers: t.subscriberCount ?? 0,
+          color:
+            idx === 0
+              ? "bg-primary"
+              : idx === 1
+              ? "bg-secondary"
+              : "bg-gradient-primary",
+        }))
+      : defaultTiers.map((t) => ({
+          tier: `${t.name} ($${t.price})`,
+          price: t.price,
+          subscribers: t.subscriberCount,
+          color: t.color,
+        }));
   const tierMonthly = tiers.map((t) => ({
     ...t,
     revenue: Math.round(t.price * t.subscribers),

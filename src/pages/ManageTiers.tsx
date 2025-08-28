@@ -49,21 +49,33 @@ const ManageTiers = () => {
   const tiers = Array.isArray(tiersData) ? tiersData : tiersData?.tiers ?? [];
 
   const createTierMutation = useMutation({
-    mutationFn: (payload) =>
-      api.post(`/tiers/`, { creator_id: creatorId, ...payload }),
+    mutationFn: (payload: {
+      name: string;
+      price: number;
+      benefits?: string[];
+    }) => api.post(`/tiers/`, { creator_id: creatorId, ...payload }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["tiers", creatorId] }),
   });
 
   const updateTierMutation = useMutation({
-    mutationFn: ({ tierId, ...payload }) =>
-      api.put(`/tiers/${tierId}`, payload),
+    mutationFn: (vars: {
+      tierId: string;
+      name?: string;
+      price?: number;
+      benefits?: string[];
+    }) =>
+      api.put(`/tiers/${vars.tierId}`, {
+        name: vars.name,
+        price: vars.price,
+        benefits: vars.benefits,
+      }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["tiers", creatorId] }),
   });
 
   const deleteTierMutation = useMutation({
-    mutationFn: (tierId) => api.delete(`/tiers/${tierId}`),
+    mutationFn: (tierId: string) => api.delete(`/tiers/${tierId}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["tiers", creatorId] }),
   });
@@ -105,30 +117,24 @@ const ManageTiers = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="p-3 bg-muted rounded-lg">
-                  <h4 className="font-medium text-foreground mb-2">
-                    Tier 1: Basic Fan ($4.99)
-                  </h4>
-                  <p className="text-muted-foreground">
-                    Entry-level content, behind-the-scenes access, fan badge
-                  </p>
-                </div>
-                <div className="p-3 bg-muted rounded-lg">
-                  <h4 className="font-medium text-foreground mb-2">
-                    Tier 2: Super Fan ($9.99)
-                  </h4>
-                  <p className="text-muted-foreground">
-                    Interactive features, Q&As, community access
-                  </p>
-                </div>
-                <div className="p-3 bg-muted rounded-lg">
-                  <h4 className="font-medium text-foreground mb-2">
-                    Tier 3: VIP Circle ($24.99)
-                  </h4>
-                  <p className="text-muted-foreground">
-                    Premium experiences, 1-on-1 access, exclusive content
-                  </p>
-                </div>
+                {tiers.slice(0, 3).map((tier, idx) => (
+                  <div key={tier.id} className="p-3 bg-muted rounded-lg">
+                    <h4 className="font-medium text-foreground mb-2">
+                      Tier {idx + 1}: {tier.name} (${tier.price})
+                    </h4>
+                    <p className="text-muted-foreground">
+                      {(
+                        tier.benefits ?? [
+                          idx === 0
+                            ? "Behind-the-scenes access"
+                            : idx === 1
+                            ? "Q&As, community access"
+                            : "Premium experiences, 1-on-1 access",
+                        ]
+                      ).join(", ")}
+                    </p>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

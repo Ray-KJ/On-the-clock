@@ -21,10 +21,15 @@ import {
   Check,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTiers } from "@/hooks/use-tiers";
 
 const CreatorProfile = () => {
   const creator = mockCreators[0];
-  const [selectedTier, setSelectedTier] = useState(mockTiers[1].id); // Default to "Most Popular"
+  const { tiers: liveTiers } = useTiers(creator.id);
+  const tierList = liveTiers && liveTiers.length ? liveTiers : mockTiers;
+  const [selectedTier, setSelectedTier] = useState(
+    tierList[1]?.id ?? tierList[0]?.id
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,7 +110,7 @@ const CreatorProfile = () => {
             Subscription Tiers
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {mockTiers.map((tier, index) => {
+            {tierList.map((tier: any, index: number) => {
               const isSelected = selectedTier === tier.id;
               return (
                 <Card
@@ -147,19 +152,21 @@ const CreatorProfile = () => {
                       <span className="text-muted-foreground">/month</span>
                     </div>
                     <CardDescription>
-                      {tier.subscriberCount} current subscribers
+                      {tier.subscriberCount ?? 0} current subscribers
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3 mb-6">
-                      {tier.benefits.map((benefit, bIndex) => (
-                        <div key={bIndex} className="flex items-center gap-2">
-                          <Check className="w-4 h-4 text-primary" />
-                          <span className="text-foreground text-sm">
-                            {benefit}
-                          </span>
-                        </div>
-                      ))}
+                      {(tier.benefits ?? []).map(
+                        (benefit: string, bIndex: number) => (
+                          <div key={bIndex} className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-primary" />
+                            <span className="text-foreground text-sm">
+                              {benefit}
+                            </span>
+                          </div>
+                        )
+                      )}
                     </div>
                     <Button
                       className={`w-full ${
@@ -246,7 +253,7 @@ const CreatorProfile = () => {
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
-                      <Play className="w-6 h-6 text-black ml-1" />
+                      <Play className="w-6 h-6 text-white" />
                     </div>
                   </div>
                   <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">

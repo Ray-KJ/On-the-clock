@@ -33,21 +33,21 @@ export const mockTiers: Tier[] = [
     name: "Basic Fan",
     price: 4.99,
     benefits: ["Early access to videos", "Exclusive behind-the-scenes", "Fan badge"],
-    subscriberCount: 1247
+    subscriberCount: 5200
   },
   {
     id: "tier2",
     name: "Super Fan",
     price: 9.99,
     benefits: ["All Basic benefits", "Monthly Q&A sessions", "Custom shoutouts", "Discord access"],
-    subscriberCount: 523
+    subscriberCount: 2400
   },
   {
     id: "tier3",
     name: "VIP Creator Circle",
     price: 24.99,
     benefits: ["All Super Fan benefits", "1-on-1 video calls", "Course content", "Collaboration opportunities"],
-    subscriberCount: 89
+    subscriberCount: 460
   }
 ];
 

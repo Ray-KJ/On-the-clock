@@ -14,9 +14,9 @@ app.add_middleware(
 
 # --- Membership Service Mock Data ---
 tiers_db = [
-    {"id": "tier1", "name": "Basic Fan", "price": 4.99, "benefits": ["Behind-the-scenes access"], "subscriberCount": 10},
-    {"id": "tier2", "name": "Super Fan", "price": 9.99, "benefits": ["Q&As", "Community access"], "subscriberCount": 5},
-    {"id": "tier3", "name": "VIP Circle", "price": 24.99, "benefits": ["1-on-1 access"], "subscriberCount": 2},
+    {"id": "tier1", "name": "Basic Fan", "price": 4.99, "benefits": ["Behind-the-scenes access"], "subscriberCount": 2500},
+    {"id": "tier2", "name": "Super Fan", "price": 9.99, "benefits": ["Q&As", "Community access"], "subscriberCount": 1200},
+    {"id": "tier3", "name": "VIP Circle", "price": 24.99, "benefits": ["1-on-1 access"], "subscriberCount": 180},
 ]
 
 subscriptions_db = []
