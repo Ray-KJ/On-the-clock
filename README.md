@@ -1,3 +1,6 @@
+# On-the-clock
+Design the value sharing mechanism of creator economy
+
 # Tiered Creator Economy (TCE) Prototype
 
 This repository contains a prototype implementation of the Tiered Creator Economy (TCE) monetization framework, as outlined in the Product Requirements Document. The system is designed to provide TikTok creators with a sustainable, subscription-style revenue system.
