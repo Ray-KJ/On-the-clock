@@ -59,20 +59,23 @@ async function fetchWithRetry(input: RequestInfo | URL, init: RequestInit & { ti
 
 export const api = {
   getTiers: async (creatorId: string): Promise<Tier[]> => {
-    // Replace with real API call
-    return [
-      { id: "tier1", name: "Bronze", price: 5 },
-      { id: "tier2", name: "Silver", price: 10 },
-      { id: "tier3", name: "Gold", price: 20 },
-    ];
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/tiers/${creatorId}`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
   },
   getCreatorContent: async (creatorId: string): Promise<any[]> => {
-    // Replace with real API call
-    return [];
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/content/creator/${creatorId}`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
   },
   uploadContent: async (formData: FormData): Promise<void> => {
-    // Replace with real API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await fetchWithRetry(`${MEMBERSHIP_API_URL}/content/`, {
+      method: "POST",
+      headers: API_TOKEN ? { Authorization: `Bearer ${API_TOKEN}` } : {},
+      body: formData,
+    });
   },
   get: async (url: string, service: "membership" | "content" = "membership") => {
     const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;

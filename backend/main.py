@@ -108,7 +108,8 @@ async def upload_content(
     title: str = Form(...),
     description: str = Form(""),
     minTier: str = Form(...),
-    tags: str = Form("")
+    tags: str = Form(""),
+    creator_id: str = Form("")
 ):
     video = {
         "id": f"video{len(videos_db)+1}",
@@ -117,6 +118,8 @@ async def upload_content(
         "description": description,
         "minTier": minTier,
         "tags": tags,
+        "creator_id": creator_id,
+        "created_at": __import__("datetime").datetime.utcnow().isoformat() + "Z",
     }
     videos_db.append(video)
     return video
