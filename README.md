@@ -1,73 +1,170 @@
-# Welcome to your Lovable project
+# TierFlow – Creator Tiers, Revenue Analytics, and Content Platform
 
-## Project info
+A full-stack demo app for the creator economy that showcases tiered subscriptions, revenue analytics with optional payout smoothing, and gated content uploads. It includes a React + Vite frontend and a FastAPI backend with mock endpoints so the project runs locally end-to-end.
 
-**URL**: https://lovable.dev/projects/414c292d-4b1f-4332-bbe3-54147c0171e0
+## Features
 
-## How can I edit this code?
+- Tier management (create, edit, delete) with live updates across the app
+- Creator dashboards with real-time totals and 3-month revenue trends
+- Revenue smoothing (optional) to defer payouts with a 6% uplift example
+- Consumer dashboard with plan/benefits derived from live tiers
+- Creator profile with subscription actions (increments tier subscribers)
+- Video upload flow with content library (mocked storage) and tier gating
+- Fully local mock backend to keep everything self-contained for demos
 
-There are several ways of editing your application.
+## Problem Statement (Context)
 
-**Use Lovable**
+Creators often lack integrated tools to:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/414c292d-4b1f-4332-bbe3-54147c0171e0) and start prompting.
+- Offer differentiated, tiered subscription plans with clear benefits
+- Understand monthly revenue patterns and simulate payout smoothing
+- Manage content access based on subscriber tier
+- React to product changes (like plan edits) across all user-facing pages
 
-Changes made via Lovable will be committed automatically to this repo.
+TierFlow demonstrates how a platform can unify tier management, analytics, and content gating with a cohesive UX and a clean developer experience.
 
-**Use your preferred IDE**
+## Tech Stack (Development Tools / Libraries)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Frontend
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Vite + React + TypeScript
+- Tailwind CSS
+- shadcn/ui component primitives
+- TanStack Query (React Query)
+- Recharts (charts)
+- Lucide React (icons)
 
-Follow these steps:
+Backend
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- FastAPI
+- Uvicorn (with reload)
+- Watchfiles (autoreload)
+- CORS Middleware
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Tooling
 
-# Step 3: Install the necessary dependencies.
-npm i
+- Bun/NPM (package managers supported)
+- ESLint
+- Vite Dev Server
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+## APIs (Mock Backend Endpoints)
+
+Membership & Tiers
+
+- GET `/tiers/{creator_id}` → list tiers
+- POST `/tiers/` → create tier
+- PUT `/tiers/{tier_id}` → update tier
+- DELETE `/tiers/{tier_id}` → delete tier
+- POST `/subscribe/` (form) / POST `/subscribe_json` (JSON) → increment `subscriberCount`
+
+Creator Content
+
+- POST `/content/` → upload content (multipart: file, title, description, minTier, tags, creator_id). Adds `created_at`.
+- GET `/content/creator/{creator_id}` → list creator videos
+
+Other Demo Endpoints
+
+- GET `/dashboard/{creator_id}` → aggregated demo stats
+- POST `/payout/{creator_id}` → demo payout smoothing response
+- KYC: POST `/kyc/verify/{creator_id}`, GET `/kyc/status/{creator_id}`
+
+## Assets
+
+- `src/assets/hero-creator.jpg` (demo imagery)
+- Lucide icons via `lucide-react`
+- Favicon and public placeholders under `public/`
+
+## Project Structure (Highlights)
+
+- `backend/main.py` → FastAPI app with mock data and endpoints
+- `src/` → React app
+  - `pages/` → Route pages (CreatorDashboard, RevenuePage, ManageTiers, etc.)
+  - `components/` → UI components, `RevenueChart` (Recharts)
+  - `hooks/use-tiers.ts` → shared hook (React Query) to load tiers across pages
+  - `lib/api.ts` → API client with retry + timeouts (fetchWithRetry)
+  - `integrations/supabase/` → placeholder (not required for local demo)
+
+## Quick Start (Local Development)
+
+Prerequisites
+
+- Node.js 18+ (or Bun 1.1+)
+- Python 3.10+
+
+1. Clone the repo
+
+```bash
+git clone https://github.com/your-team/tierflow.git
+cd tierflow
 ```
 
-**Edit a file directly in GitHub**
+2. Frontend setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# install deps (npm or bun)
+npm install
+# or
+bun install
 
-**Use GitHub Codespaces**
+# create .env (frontend)
+cat > .env << 'EOF'
+VITE_MEMBERSHIP_API_URL=http://127.0.0.1:8001
+# Optional
+# VITE_CONTENT_API_URL=http://127.0.0.1:8000
+# VITE_API_TOKEN=
+EOF
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. Backend setup
 
-## What technologies are used for this project?
+```bash
+# from project root, run FastAPI with reload watching only the backend dir
+uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload --reload-dir backend
+```
 
-This project is built with:
+Notes
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- If you see “Address already in use”, stop any previous server or use another port, e.g. `--port 8002`.
+- Keep the backend running in a terminal tab.
 
-## How can I deploy this project?
+4. Run the frontend
 
-Simply open [Lovable](https://lovable.dev/projects/414c292d-4b1f-4332-bbe3-54147c0171e0) and click on Share -> Publish.
+```bash
+# in another terminal
+npm run dev
+# or
+bun dev
+```
 
-## Can I connect a custom domain to my Lovable project?
+Open the app at the URL shown by Vite (typically `http://localhost:5173`).
 
-Yes, you can!
+## How Data Stays in Sync
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- `use-tiers` hook centralizes tier loading via React Query. Pages use the same query key `['tiers', creatorId]`.
+- `ManageTiers` mutations call `invalidateQueries(['tiers', creatorId])`, updating Creator Dashboard, Revenue Page, Creator Profile, and Consumer Dashboard.
+- Uploads in `UploadVideo` call `invalidateQueries(['content', creatorId])` so the “Your Content Library” refreshes immediately.
+- Subscribe actions in `CreatorProfile` hit `/subscribe_json` and invalidate the `tiers` query, bumping `subscriberCount` by 1.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Development Notes
+
+- Dashboard Revenue Trends (Jan–Mar) shows creator post-split revenue; Revenue Page supports optional smoothing with area overlay.
+- The backend uses in-memory data for demo purposes. Restarting the server resets state.
+- The API client has retry/timeouts to smooth over brief backend reloads.
+
+## Available Scripts
+
+Frontend
+
+- `npm run dev` – start Vite dev server
+- `npm run build` – production build
+- `npm run preview` – preview production build
+
+Backend
+
+- `uvicorn backend.main:app --reload --port 8001` – start API server
+
+## Public Repository
+
+Team GitHub (replace with your public repo URL):
+
+- https://github.com/your-team/tierflow
