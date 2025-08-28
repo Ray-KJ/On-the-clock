@@ -12,6 +12,7 @@ import ConsumerDashboard from "./pages/ConsumerDashboard";
 import CreatorProfile from "./pages/CreatorProfile";
 import LandingPage from "./pages/LandingPage";
 import UploadVideo from "./pages/UploadVideo";
+import KYCStatus from "./pages/KYCStatus";
 
 const queryClient = new QueryClient();
 
@@ -29,8 +30,7 @@ const App = () => (
           <Route path="/consumer" element={<ConsumerDashboard />} />
           <Route path="/creator/:id" element={<CreatorProfile />} />
           <Route path="/upload" element={<UploadVideo />} />
-          <Route path="/kyc" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/kyc" element={<KYCStatus />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
