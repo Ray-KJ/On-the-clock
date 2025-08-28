@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTiers } from "@/hooks/use-tiers";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 const CreatorProfile = () => {
   const creator = mockCreators[0];
@@ -30,6 +32,18 @@ const CreatorProfile = () => {
   const [selectedTier, setSelectedTier] = useState(
     tierList[1]?.id ?? tierList[0]?.id
   );
+  const queryClient = useQueryClient();
+  const subscribeMutation = useMutation({
+    mutationFn: async (tierId: string) => {
+      return api.postJson(`/subscribe_json`, {
+        user_id: "demo-user",
+        tier_id: tierId,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tiers", creator.id] });
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -174,7 +188,10 @@ const CreatorProfile = () => {
                           ? "bg-gradient-primary text-white shadow-glow"
                           : "bg-muted text-foreground hover:bg-muted/80"
                       }`}
-                      onClick={() => setSelectedTier(tier.id)}
+                      onClick={() => {
+                        setSelectedTier(tier.id);
+                        subscribeMutation.mutate(tier.id);
+                      }}
                     >
                       Subscribe to {tier.name}
                     </Button>

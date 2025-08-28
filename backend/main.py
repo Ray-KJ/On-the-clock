@@ -49,6 +49,24 @@ def delete_tier(tier_id: str):
 @app.post("/subscribe/")
 def subscribe(user_id: str = Form(...), tier_id: str = Form(...)):
     subscriptions_db.append({"user_id": user_id, "tier_id": tier_id})
+    # Increment subscriber count on the tier
+    for t in tiers_db:
+        if t["id"] == tier_id:
+            t["subscriberCount"] = (t.get("subscriberCount", 0) or 0) + 1
+            break
+    return {"success": True}
+
+@app.post("/subscribe_json")
+def subscribe_json(payload: dict):
+    user_id = payload.get("user_id")
+    tier_id = payload.get("tier_id")
+    if not user_id or not tier_id:
+        raise HTTPException(status_code=400, detail="user_id and tier_id required")
+    subscriptions_db.append({"user_id": user_id, "tier_id": tier_id})
+    for t in tiers_db:
+        if t["id"] == tier_id:
+            t["subscriberCount"] = (t.get("subscriberCount", 0) or 0) + 1
+            break
     return {"success": True}
 
 @app.get("/subscriptions/{user_id}")

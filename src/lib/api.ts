@@ -105,6 +105,15 @@ export const api = {
     });
     return res.json();
   },
+  postJson: async (url: string, data: any, service: "membership" | "content" = "membership") => {
+    const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
+    const res = await fetchWithRetry(`${base}${url}`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
   upload: async (url: string, formData: FormData) => {
     const res = await fetchWithRetry(`${CONTENT_API_URL}${url}`, {
       method: "POST",
