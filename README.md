@@ -1,234 +1,170 @@
-# On-the-clock
-Design the value sharing mechanism of creator economy
+# TierFlow – Creator Tiers, Revenue Analytics, and Content Platform
 
-# Tiered Creator Economy (TCE) Prototype
+A full-stack demo app for the creator economy that showcases tiered subscriptions, revenue analytics with optional payout smoothing, and gated content uploads. It includes a React + Vite frontend and a FastAPI backend with mock endpoints so the project runs locally end-to-end.
 
-This repository contains a prototype implementation of the Tiered Creator Economy (TCE) monetization framework, as outlined in the Product Requirements Document. The system is designed to provide TikTok creators with a sustainable, subscription-style revenue system.
+## Features
 
-## Project Structure
+- Tier management (create, edit, delete) with live updates across the app
+- Creator dashboards with real-time totals and 3-month revenue trends
+- Revenue smoothing (optional) to defer payouts with a 6% uplift example
+- Consumer dashboard with plan/benefits derived from live tiers
+- Creator profile with subscription actions (increments tier subscribers)
+- Video upload flow with content library (mocked storage) and tier gating
+- Fully local mock backend to keep everything self-contained for demos
 
-The prototype consists of two independent FastAPI services:
+## Problem Statement (Context)
 
-1.  **`membership-service`**: Handles creator membership tiers, user subscriptions, KYC verification (placeholder), and creator dashboards (placeholder).
-2.  **`content-service`**: Manages content uploads, content gating based on membership tiers, and integrates with the `membership-service` to verify user subscriptions.
+Creators often lack integrated tools to:
 
-## Setup and Running the Prototype
+- Offer differentiated, tiered subscription plans with clear benefits
+- Understand monthly revenue patterns and simulate payout smoothing
+- Manage content access based on subscriber tier
+- React to product changes (like plan edits) across all user-facing pages
 
-To run the prototype, you need to set up and start both the `membership-service` and `content-service`.
+TierFlow demonstrates how a platform can unify tier management, analytics, and content gating with a cohesive UX and a clean developer experience.
 
-### Prerequisites
+## Tech Stack (Development Tools / Libraries)
 
-*   Python 3.8+
-*   `pip` (Python package installer)
+Frontend
 
-### 1. Membership Service
+- Vite + React + TypeScript
+- Tailwind CSS
+- shadcn/ui component primitives
+- TanStack Query (React Query)
+- Recharts (charts)
+- Lucide React (icons)
 
-Navigate to the `membership-service` directory:
+Backend
+
+- FastAPI
+- Uvicorn (with reload)
+- Watchfiles (autoreload)
+- CORS Middleware
+
+Tooling
+
+- Bun/NPM (package managers supported)
+- ESLint
+- Vite Dev Server
+
+## APIs (Mock Backend Endpoints)
+
+Membership & Tiers
+
+- GET `/tiers/{creator_id}` → list tiers
+- POST `/tiers/` → create tier
+- PUT `/tiers/{tier_id}` → update tier
+- DELETE `/tiers/{tier_id}` → delete tier
+- POST `/subscribe/` (form) / POST `/subscribe_json` (JSON) → increment `subscriberCount`
+
+Creator Content
+
+- POST `/content/` → upload content (multipart: file, title, description, minTier, tags, creator_id). Adds `created_at`.
+- GET `/content/creator/{creator_id}` → list creator videos
+
+Other Demo Endpoints
+
+- GET `/dashboard/{creator_id}` → aggregated demo stats
+- POST `/payout/{creator_id}` → demo payout smoothing response
+- KYC: POST `/kyc/verify/{creator_id}`, GET `/kyc/status/{creator_id}`
+
+## Assets
+
+- `src/assets/hero-creator.jpg` (demo imagery)
+- Lucide icons via `lucide-react`
+- Favicon and public placeholders under `public/`
+
+## Project Structure (Highlights)
+
+- `backend/main.py` → FastAPI app with mock data and endpoints
+- `src/` → React app
+  - `pages/` → Route pages (CreatorDashboard, RevenuePage, ManageTiers, etc.)
+  - `components/` → UI components, `RevenueChart` (Recharts)
+  - `hooks/use-tiers.ts` → shared hook (React Query) to load tiers across pages
+  - `lib/api.ts` → API client with retry + timeouts (fetchWithRetry)
+  - `integrations/supabase/` → placeholder (not required for local demo)
+
+## Quick Start (Local Development)
+
+Prerequisites
+
+- Node.js 18+ (or Bun 1.1+)
+- Python 3.10+
+
+1. Clone the repo
 
 ```bash
-cd membership-service
+git clone https://github.com/your-team/tierflow.git
+cd tierflow
 ```
 
-Install the required Python dependencies:
+2. Frontend setup
 
 ```bash
-pip install -r requirements.txt
+# install deps (npm or bun)
+npm install
+# or
+bun install
+
+# create .env (frontend)
+cat > .env << 'EOF'
+VITE_MEMBERSHIP_API_URL=http://127.0.0.1:8001
+# Optional
+# VITE_CONTENT_API_URL=http://127.0.0.1:8000
+# VITE_API_TOKEN=
+EOF
 ```
 
-Run the `membership-service` using Uvicorn on port 8001:
+3. Backend setup
 
 ```bash
-uvicorn app.main:app --port 8001
+# from project root, run FastAPI with reload watching only the backend dir
+uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload --reload-dir backend
 ```
 
-### 2. Content Service
+Notes
 
-Open a new terminal or command prompt.
+- If you see “Address already in use”, stop any previous server or use another port, e.g. `--port 8002`.
+- Keep the backend running in a terminal tab.
 
-Navigate to the `content-service` directory:
+4. Run the frontend
 
 ```bash
-cd content-service
+# in another terminal
+npm run dev
+# or
+bun dev
 ```
 
-Install the required Python dependencies:
+Open the app at the URL shown by Vite (typically `http://localhost:5173`).
 
-```bash
-pip install -r requirements.txt
-```
+## How Data Stays in Sync
 
-Run the `content-service` using Uvicorn on port 8000:
+- `use-tiers` hook centralizes tier loading via React Query. Pages use the same query key `['tiers', creatorId]`.
+- `ManageTiers` mutations call `invalidateQueries(['tiers', creatorId])`, updating Creator Dashboard, Revenue Page, Creator Profile, and Consumer Dashboard.
+- Uploads in `UploadVideo` call `invalidateQueries(['content', creatorId])` so the “Your Content Library” refreshes immediately.
+- Subscribe actions in `CreatorProfile` hit `/subscribe_json` and invalidate the `tiers` query, bumping `subscriberCount` by 1.
 
-```bash
-uvicorn app.main:app --port 8000
-```
+## Development Notes
 
-## API Endpoints and Example Usage
+- Dashboard Revenue Trends (Jan–Mar) shows creator post-split revenue; Revenue Page supports optional smoothing with area overlay.
+- The backend uses in-memory data for demo purposes. Restarting the server resets state.
+- The API client has retry/timeouts to smooth over brief backend reloads.
 
-Once both services are running, you can interact with their APIs. You can use tools like Postman, Insomnia, or `curl`.
+## Available Scripts
 
-### Membership Service (http://localhost:8001)
+Frontend
 
-#### 1. Create a Membership Tier
+- `npm run dev` – start Vite dev server
+- `npm run build` – production build
+- `npm run preview` – preview production build
 
-**Endpoint**: `POST /tiers/`
+Backend
 
-**Note**: There's a limit of 3 tiers per creator, and the price must be one of `$2.99`, `$5.99`, or `$9.99`.
+- `uvicorn backend.main:app --reload --port 8001` – start API server
 
-**Body**:
-```json
-{
-  "creator_id": "creator123",
-  "name": "Bronze Tier",
-  "price": 2.99,
-  "perks": ["Exclusive Videos", "Early Access"]
-}
-```
+## Public Repository
 
-**Example `curl` command**:
-```bash
-curl -X POST http://localhost:8001/tiers/ \
-     -H "Content-Type: application/json" \
-     -d '{"creator_id": "creator123", "name": "Bronze Tier", "price": 2.99, "perks": ["Exclusive Videos", "Early Access"]}'
-```
+Team GitHub (replace with your public repo URL):
 
-#### 2. Get Creator's Membership Tiers
-
-**Endpoint**: `GET /tiers/{creator_id}`
-
-**Example `curl` command**:
-```bash
-curl -X GET http://localhost:8001/tiers/creator123
-```
-
-#### 3. Update a Membership Tier
-
-**Endpoint**: `PUT /tiers/{tier_id}`
-
-**Note**: The price must be one of `$2.99`, `$5.99`, or `$9.99`.
-
-**Body**:
-```json
-{
-  "id": "<the-tier-id>",
-  "creator_id": "creator123",
-  "name": "Silver Tier",
-  "price": 5.99,
-  "perks": ["Exclusive Videos", "Early Access", "Members-Only Q&A"]
-}
-```
-
-**Example `curl` command**:
-```bash
-curl -X PUT http://localhost:8001/tiers/<the-tier-id> \
-     -H "Content-Type: application/json" \
-     -d '{"id": "<the-tier-id>", "creator_id": "creator123", "name": "Silver Tier", "price": 5.99, "perks": ["Exclusive Videos", "Early Access", "Members-Only Q&A"]}'
-```
-
-#### 4. Subscribe to a Tier
-
-**Endpoint**: `POST /subscribe/`
-
-**Body**:
-```json
-{
-  "user_id": "user456",
-  "creator_id": "creator123",
-  "tier_id": "<the-tier-id>"
-}
-```
-
-**Example `curl` command**:
-```bash
-curl -X POST http://localhost:8001/subscribe/ \
-     -H "Content-Type: application/json" \
-     -d '{"user_id": "user456", "creator_id": "creator123", "tier_id": "<the-tier-id>"}'
-```
-
-#### 5. Get User Subscriptions
-
-**Endpoint**: `GET /subscriptions/{user_id}`
-
-**Example `curl` command**:
-```bash
-curl -X GET http://localhost:8001/subscriptions/user456
-```
-
-#### 6. KYC Verification (Placeholder)
-
-**Endpoint**: `POST /kyc/verify/{creator_id}`
-
-**Example `curl` command**:
-```bash
-curl -X POST http://localhost:8001/kyc/verify/creator123
-```
-
-#### 7. Creator Dashboard
-
-**Endpoint**: `GET /dashboard/{creator_id}`
-
-**Description**: This endpoint now provides simplified analytics, including the total number of members and monthly revenue for the specified creator.
-
-**Example `curl` command**:
-```bash
-curl -X GET http://localhost:8001/dashboard/creator123
-```
-
-#### 8. Creator Payout (Placeholder)
-
-**Endpoint**: `POST /payout/{creator_id}`
-
-**Description**: This is a placeholder endpoint simulating the ML-based revenue allocation and smoothed payout mechanism. It includes a mock KYC verification check.
-
-**Example `curl` command**:
-```bash
-curl -X POST http://localhost:8001/payout/creator123
-```
-
-### Content Service (http://localhost:8000)
-
-#### 1. Upload Content
-
-**Endpoint**: `POST /content/`
-
-**Body**:
-```json
-{
-  "creator_id": "creator123",
-  "title": "My Exclusive Video",
-  "description": "A video for my loyal members.",
-  "video_url": "http://example.com/video1.mp4",
-  "visibility": "members_only",
-  "allowed_tier_ids": ["<the-tier-id>"]
-}
-```
-
-**Example `curl` command**:
-```bash
-curl -X POST http://localhost:8000/content/ \
-     -H "Content-Type: application/json" \
-     -d '{"creator_id": "creator123", "title": "My Exclusive Video", "description": "A video for my loyal members.", "video_url": "http://example.com/video1.mp4", "visibility": "members_only", "allowed_tier_ids": ["<the-tier-id>"]}'
-```
-
-#### 2. Get Content
-
-**Endpoint**: `GET /content/{content_id}?user_id={user_id}`
-
-**Example `curl` command (as a subscribed user)**:
-```bash
-curl -X GET "http://localhost:8000/content/<the-content-id>?user_id=user456"
-```
-
-**Example `curl` command (as an unsubscribed user)**:
-```bash
-curl -X GET "http://localhost:8000/content/<the-content-id>"
-```
-
-#### 3. Get Creator's Content
-
-**Endpoint**: `GET /content/creator/{creator_id}`
-
-**Example `curl` command**:
-```bash
-curl -X GET http://localhost:8000/content/creator/creator123
-```
+- https://github.com/your-team/tierflow
