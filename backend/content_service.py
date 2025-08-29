@@ -1,9 +1,9 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from .models import videos_db
+from models import videos_db
 
 router = APIRouter()
 
-@router.post("/content/")
+@router.post("/")
 async def upload_content(
     file: UploadFile = File(...),
     title: str = Form(...),
@@ -25,11 +25,11 @@ async def upload_content(
     videos_db.append(video)
     return video
 
-@router.get("/content/creator/{creator_id}")
+@router.get("/creator/{creator_id}")
 def get_creator_content(creator_id: str):
     return videos_db
 
-@router.get("/content/{content_id}")
+@router.get("/{content_id}")
 def get_content(content_id: str, user_id: str):
     # For demo, just return the video if found
     for v in videos_db:

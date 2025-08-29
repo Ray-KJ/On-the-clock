@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from . import membership_service, content_service
+import membership_service
+import content_service
 
 app = FastAPI()
 
@@ -19,4 +20,11 @@ app.include_router(content_service.router, prefix="/content", tags=["Content"])
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
+    # 在开发环境中运行FastAPI应用程序
+    uvicorn.run(
+        "mainC:app",  # 应用程序入口点
+        host="localhost",  # 本地主机
+        port=8001,  # 端口号
+        reload=True,  # 启用热重载用于开发
+        log_level="debug"  # 详细日志记录
+    )

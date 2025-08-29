@@ -1,24 +1,23 @@
 from fastapi import APIRouter, Form, HTTPException
-from .models import tiers_db, subscriptions_db, kyc_db
+from models import tiers_db, subscriptions_db, kyc_db
 
 router = APIRouter()
-
 @router.get("/tiers/{creator_id}")
 def get_tiers(creator_id: str):
     return tiers_db
 
-@router.get("/lu")
-def get_lu():
-    print("lu")
-    return "lu"
+# @router.get("/lu")
+# def get_lu():
+#     print("lu")
+#     return "lu"
 
-@router.post("/tiers/")
-def create_tier(tier: dict):
-    tier["id"] = f"tier{len(tiers_db)+1}"
-    name = tier["name"]    
-    tiers_db.append(tier)
-    print(name)
-    return tier
+# @router.post("/tiers/")
+# def create_tier(tier: dict):
+#     tier["id"] = f"tier{len(tiers_db)+1}"
+#     name = tier["name"]    
+#     tiers_db.append(tier)
+#     print(name)
+#     return tier
 
 @router.put("/tiers/{tier_id}")
 def update_tier(tier_id: str, tier: dict):
