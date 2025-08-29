@@ -368,6 +368,87 @@ const RevenuePage = () => {
             </CardContent>
           </Card>
 
+          {/* One-Time Purchase Revenue Breakdown */}
+          <Card className="mt-8 bg-gradient-card border-border shadow-card">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-foreground">
+                  One-Time Purchase Revenue Breakdown
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Individual purchase items with total earnings
+                </CardDescription>
+              </div>
+              <Button variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                Export Data
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {oneTimePurchases.map((purchase, index) => {
+                  const totalRevenue =
+                    purchase.price * (purchase.purchaseCount || 0);
+                  const percentageOfTotal =
+                    realOneTimeRevenue > 0
+                      ? ((totalRevenue / realOneTimeRevenue) * 100).toFixed(1)
+                      : "0.0";
+
+                  return (
+                    <div key={purchase.id} className="p-4 bg-muted rounded-lg">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-3 h-3 rounded-full bg-accent"></div>
+                        <h3 className="font-medium text-foreground">
+                          {purchase.name}
+                        </h3>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            Total Revenue:
+                          </span>
+                          <span className="text-foreground font-medium">
+                            ${totalRevenue.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            Price per Item:
+                          </span>
+                          <span className="text-foreground font-medium">
+                            ${purchase.price}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            Purchase Count:
+                          </span>
+                          <span className="text-foreground font-medium">
+                            {purchase.purchaseCount || 0}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            % of One-Time Revenue:
+                          </span>
+                          <span className="text-foreground font-medium">
+                            {percentageOfTotal}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Type:</span>
+                          <Badge variant="outline" className="text-xs">
+                            {purchase.type}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* ML Insights */}
           <Card className="mt-8 bg-gradient-card border-border shadow-card">
             <CardHeader>
