@@ -13,6 +13,7 @@ import CreatorProfile from "./pages/CreatorProfile";
 import LandingPage from "./pages/LandingPage";
 import UploadVideo from "./pages/UploadVideo";
 import KYCStatus from "./pages/KYCStatus";
+import VideoGallery from "./pages/VideoGallery";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/creator/:id" element={<CreatorProfile />} />
           <Route path="/upload" element={<UploadVideo />} />
           <Route path="/kyc" element={<KYCStatus />} />
+          <Route path="/gallery" element={<VideoGallery />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

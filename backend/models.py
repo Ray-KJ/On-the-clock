@@ -10,7 +10,7 @@ tiers_db = [
 
 # One-time purchase items
 one_time_purchases_db = [
-    {"id": "purchase1", "name": "Exclusive Video Tutorial", "price": 19.99, "description": "Learn advanced techniques", "type": "video", "creator_id": "creator1", "purchaseCount": 45},
+    {"id": "purchase1", "name": "Exclusive Bootcamp", "price": 19.99, "description": "Learn advanced techniques", "type": "video", "creator_id": "creator1", "purchaseCount": 45},
     {"id": "purchase2", "name": "Premium E-book Guide", "price": 29.99, "description": "Complete guide to success", "type": "ebook", "creator_id": "creator1", "purchaseCount": 23},
     {"id": "purchase3", "name": "Limited Edition Merch", "price": 49.99, "description": "Exclusive creator merchandise", "type": "merchandise", "creator_id": "creator1", "purchaseCount": 12},
 ]
