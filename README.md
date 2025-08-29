@@ -1,170 +1,225 @@
-# TierFlow – Creator Tiers, Revenue Analytics, and Content Platform
+# On-the-clock: Creator Revenue Management Platform
 
-A full-stack demo app for the creator economy that showcases tiered subscriptions, revenue analytics with optional payout smoothing, and gated content uploads. It includes a React + Vite frontend and a FastAPI backend with mock endpoints so the project runs locally end-to-end.
+## 🎯 Project Overview
 
-## Features
+**On-the-clock** is a creator revenue management platform that helps content creators manage subscription tiers, one-time purchases, and analyze revenue through ML-powered quality scoring. The platform provides real-time analytics, payout smoothing, and content access control based on subscription levels.
 
-- Tier management (create, edit, delete) with live updates across the app
-- Creator dashboards with real-time totals and 3-month revenue trends
-- Revenue smoothing (optional) to defer payouts with a 6% uplift example
-- Consumer dashboard with plan/benefits derived from live tiers
-- Creator profile with subscription actions (increments tier subscribers)
-- Video upload flow with content library (mocked storage) and tier gating
-- Fully local mock backend to keep everything self-contained for demos
+## ✨ Features & Functionality
 
-## Problem Statement (Context)
+### 🎬 Content Management
 
-Creators often lack integrated tools to:
+- **Video Upload & Management**: Upload videos with tier-based access control
+- **Content Library**: Organize and manage uploaded content
+- **Access Control**: Set content visibility based on subscription tiers
 
-- Offer differentiated, tiered subscription plans with clear benefits
-- Understand monthly revenue patterns and simulate payout smoothing
-- Manage content access based on subscriber tier
-- React to product changes (like plan edits) across all user-facing pages
+### 💰 Revenue Optimization
 
-TierFlow demonstrates how a platform can unify tier management, analytics, and content gating with a cohesive UX and a clean developer experience.
+- **Subscription Tiers**: Create and manage multiple subscription levels (Basic Fan, Super Fan, VIP Circle)
+- **One-time Purchases**: Sell individual content items (videos, ebooks, merchandise)
+- **ML Revenue Split**: Quality-based revenue distribution (50%-75%) using TikTok reward factors
+- **Payout Smoothing**: Intelligent payout distribution with 6% uplift
+- **Real-time Analytics**: Live revenue tracking and performance metrics
 
-## Tech Stack (Development Tools / Libraries)
+### 📊 Dashboard & Analytics
 
-Frontend
+- **Creator Dashboard**: Overview of earnings, subscribers, and content
+- **Consumer Dashboard**: User-friendly content discovery with tier-based access
+- **Revenue Analytics**: Detailed breakdown of subscription and one-time purchase revenue
+- **Video Gallery**: Complete content library with ML analysis and revenue insights
+- **KYC Management**: Identity verification and compliance tracking
 
-- Vite + React + TypeScript
-- Tailwind CSS
-- shadcn/ui component primitives
-- TanStack Query (React Query)
-- Recharts (charts)
-- Lucide React (icons)
+### 🔧 Management Tools
 
-Backend
+- **Tier Management**: Add, edit, and delete subscription tiers with live updates
+- **Purchase Management**: Manage one-time purchase items and track sales
+- **User Management**: Handle subscriptions and user access control
+- **Content Control**: Manage video access and visibility settings
 
-- FastAPI
-- Uvicorn (with reload)
-- Watchfiles (autoreload)
-- CORS Middleware
+## 🛠️ Development Tools
 
-Tooling
+### Frontend
 
-- Bun/NPM (package managers supported)
-- ESLint
-- Vite Dev Server
+- **React 18**: Modern React with hooks and functional components
+- **TypeScript**: Type-safe development environment
+- **Vite**: Fast build tool and development server
+- **Tailwind CSS**: Utility-first CSS framework
+- **Shadcn/ui**: High-quality React component library (Radix UI primitives)
 
-## APIs (Mock Backend Endpoints)
+### Backend
 
-Membership & Tiers
+- **FastAPI**: Modern Python web framework
+- **Python 3.9+**: Core backend language
+- **Uvicorn**: ASGI server for FastAPI with hot reload
 
-- GET `/tiers/{creator_id}` → list tiers
-- POST `/tiers/` → create tier
-- PUT `/tiers/{tier_id}` → update tier
-- DELETE `/tiers/{tier_id}` → delete tier
-- POST `/subscribe/` (form) / POST `/subscribe_json` (JSON) → increment `subscriberCount`
+### Development Environment
 
-Creator Content
+- **Node.js 18+**: JavaScript runtime
+- **npm**: Package manager
+- **ESLint**: Code linting and quality
+- **PostCSS**: CSS processing
 
-- POST `/content/` → upload content (multipart: file, title, description, minTier, tags, creator_id). Adds `created_at`.
-- GET `/content/creator/{creator_id}` → list creator videos
+## 🔌 APIs Used
 
-Other Demo Endpoints
+### Internal APIs
 
-- GET `/dashboard/{creator_id}` → aggregated demo stats
-- POST `/payout/{creator_id}` → demo payout smoothing response
-- KYC: POST `/kyc/verify/{creator_id}`, GET `/kyc/status/{creator_id}`
+- **Membership Service** (`/membership/*`):
 
-## Assets
+  - `GET /tiers/{creator_id}` - List subscription tiers
+  - `POST /tiers/` - Create new tier
+  - `PUT /tiers/{tier_id}` - Update tier
+  - `DELETE /tiers/{tier_id}` - Delete tier
+  - `GET /one-time-purchases/{creator_id}` - List one-time purchases
+  - `POST /one-time-purchases/` - Create one-time purchase
+  - `GET /dashboard/{creator_id}` - Get revenue analytics
+  - `GET /kyc/status/{creator_id}` - Get KYC status
 
-- `src/assets/hero-creator.jpg` (demo imagery)
-- Lucide icons via `lucide-react`
-- Favicon and public placeholders under `public/`
+- **Content Service** (`/content/*`):
+  - `POST /` - Upload video content
+  - `GET /creator/{creator_id}` - Get creator's content
+  - `GET /ml-score/{content_id}` - Get ML analysis results
 
-## Project Structure (Highlights)
+## 🎨 Assets Used
 
-- `backend/main.py` → FastAPI app with mock data and endpoints
-- `src/` → React app
-  - `pages/` → Route pages (CreatorDashboard, RevenuePage, ManageTiers, etc.)
-  - `components/` → UI components, `RevenueChart` (Recharts)
-  - `hooks/use-tiers.ts` → shared hook (React Query) to load tiers across pages
-  - `lib/api.ts` → API client with retry + timeouts (fetchWithRetry)
-  - `integrations/supabase/` → placeholder (not required for local demo)
+### Images
 
-## Quick Start (Local Development)
+- **Hero Creator Image**: `src/assets/hero-creator.jpg`
+- **Unsplash Photos**: Video thumbnail images
+- **Custom Icons**: Lucide React icon library
+- **Favicon**: `public/favicon.ico`
 
-Prerequisites
+### Design Elements
 
-- Node.js 18+ (or Bun 1.1+)
-- Python 3.10+
+- **Color Scheme**: Dark theme with accent colors
+- **Typography**: Modern, readable fonts via Tailwind
+- **Layout Components**: Responsive grid systems
+- **Interactive Elements**: Hover effects and animations
 
-1. Clone the repo
+## 📚 Libraries & Dependencies
 
-```bash
-git clone https://github.com/your-team/tierflow.git
-cd tierflow
+### Frontend Libraries
+
+```json
+{
+  "@tanstack/react-query": "Data fetching and state management",
+  "react-router-dom": "Client-side routing",
+  "lucide-react": "Icon library",
+  "recharts": "Chart components for revenue analytics",
+  "react-hook-form": "Form handling and validation",
+  "zod": "Schema validation",
+  "clsx": "Conditional CSS classes",
+  "tailwind-merge": "Tailwind CSS utilities merging"
+}
 ```
 
-2. Frontend setup
+### Backend Libraries
+
+```python
+{
+  "fastapi": "Web framework",
+  "uvicorn": "ASGI server",
+  "python-multipart": "File upload handling"
+}
+```
+
+### UI Components
+
+- **Shadcn/ui**: Button, Card, Dialog, Form, Navigation components
+- **Custom Components**: RevenueChart, VideoThumbnail, Navigation
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+
+## 🎯 Problem Statement
+
+### Current Challenges in Creator Economy
+
+Content creators face several critical challenges in monetizing their work:
+
+1. **Revenue Volatility**: Inconsistent income streams create financial instability
+2. **Complex Monetization**: Difficulty in managing multiple revenue sources (subscriptions + one-time sales)
+3. **Quality Recognition**: Lack of systematic quality assessment for content
+4. **Payout Management**: Poor cash flow management and planning
+5. **Access Control**: Complex content gating and subscription management
+
+### Our Solution
+
+**On-the-clock** addresses these challenges through:
+
+- **ML-Powered Quality Assessment**: Automated content scoring based on TikTok's reward factors (originality, watch time, engagement, search value)
+- **Intelligent Revenue Splits**: Quality-based creator compensation (50%-75%)
+- **Payout Smoothing**: AI-driven payout distribution with 6% interest incentives
+- **Unified Management**: Single platform for subscription tiers and one-time purchases
+- **Real-time Analytics**: Live performance tracking and revenue insights
+
+### Target Impact
+
+- **Reduce Revenue Volatility**: Through payout smoothing and tier diversification
+- **Increase Creator Earnings**: Through quality-based ML revenue splits
+- **Improve Cash Flow**: Better financial planning through smoothed payouts
+- **Streamline Operations**: Centralized management of all revenue streams
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Python 3.9+
+- npm
+
+### Installation
+
+1. **Clone the repository**
 
 ```bash
-# install deps (npm or bun)
+git clone https://github.com/your-team/on-the-clock.git
+cd on-the-clock
+```
+
+2. **Install frontend dependencies**
+
+```bash
 npm install
-# or
-bun install
-
-# create .env (frontend)
-cat > .env << 'EOF'
-VITE_MEMBERSHIP_API_URL=http://127.0.0.1:8001
-# Optional
-# VITE_CONTENT_API_URL=http://127.0.0.1:8000
-# VITE_API_TOKEN=
-EOF
 ```
 
-3. Backend setup
+3. **Install backend dependencies**
 
 ```bash
-# from project root, run FastAPI with reload watching only the backend dir
-uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload --reload-dir backend
+cd backend
+pip install fastapi uvicorn python-multipart
 ```
 
-Notes
-
-- If you see “Address already in use”, stop any previous server or use another port, e.g. `--port 8002`.
-- Keep the backend running in a terminal tab.
-
-4. Run the frontend
+4. **Start the development servers**
 
 ```bash
-# in another terminal
+# Terminal 1: Frontend
 npm run dev
-# or
-bun dev
+
+# Terminal 2: Backend
+cd backend
+python mainC.py
 ```
 
-Open the app at the URL shown by Vite (typically `http://localhost:5173`).
+5. **Access the application**
 
-## How Data Stays in Sync
+- Frontend: http://localhost:8080
+- Backend API: http://localhost:8001
+- API Documentation: http://localhost:8001/docs
 
-- `use-tiers` hook centralizes tier loading via React Query. Pages use the same query key `['tiers', creatorId]`.
-- `ManageTiers` mutations call `invalidateQueries(['tiers', creatorId])`, updating Creator Dashboard, Revenue Page, Creator Profile, and Consumer Dashboard.
-- Uploads in `UploadVideo` call `invalidateQueries(['content', creatorId])` so the “Your Content Library” refreshes immediately.
-- Subscribe actions in `CreatorProfile` hit `/subscribe_json` and invalidate the `tiers` query, bumping `subscriberCount` by 1.
+## 📁 Project Structure
 
-## Development Notes
+```
+on-the-clock/
+├── src/                    # Frontend source code
+│   ├── components/        # React components (Navigation, RevenueChart, etc.)
+│   ├── pages/            # Page components (Dashboard, Revenue, ManageTiers, etc.)
+│   ├── hooks/            # Custom React hooks (use-tiers, use-mobile)
+│   ├── lib/              # Utility functions and API client
+│   └── assets/           # Static assets (hero-creator.jpg)
+├── backend/               # Backend Python code
+│   ├── mainC.py          # Main FastAPI application
+│   ├── models.py          # Data models and ML functions
+│   ├── membership_service.py  # Membership API endpoints
+│   └── content_service.py     # Content API endpoints
+├── public/                # Public assets (favicon, placeholder images)
+└── supabase/              # Supabase configuration (placeholder)
+```
 
-- Dashboard Revenue Trends (Jan–Mar) shows creator post-split revenue; Revenue Page supports optional smoothing with area overlay.
-- The backend uses in-memory data for demo purposes. Restarting the server resets state.
-- The API client has retry/timeouts to smooth over brief backend reloads.
-
-## Available Scripts
-
-Frontend
-
-- `npm run dev` – start Vite dev server
-- `npm run build` – production build
-- `npm run preview` – preview production build
-
-Backend
-
-- `uvicorn backend.main:app --reload --port 8001` – start API server
-
-## Public Repository
-
-Team GitHub (replace with your public repo URL):
-
-- https://github.com/your-team/tierflow
+Team Github: https://github.com/Ray-KJ/On-the-clock
