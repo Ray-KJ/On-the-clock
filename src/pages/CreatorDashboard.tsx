@@ -143,7 +143,7 @@ const CreatorDashboard = () => {
             <Card className="bg-gradient-card border-border shadow-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Attributable Income - Subscription
+                  Attributable Income: Subscription
                 </CardTitle>
                 <Users className="h-4 w-4 text-secondary" />
               </CardHeader>
@@ -169,7 +169,7 @@ const CreatorDashboard = () => {
             <Card className="bg-gradient-card border-border shadow-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Attributable Income - One-Time Revenue
+                  Attributable Income: One-Time Revenue
                 </CardTitle>
                 <ShoppingBag className="h-4 w-4 text-primary" />
               </CardHeader>

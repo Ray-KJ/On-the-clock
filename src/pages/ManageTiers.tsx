@@ -220,7 +220,7 @@ const ManageTiers = () => {
                           idx === 0
                             ? "Behind-the-scenes access"
                             : idx === 1
-                            ? "Q&As, community access"
+                            ? "Q&As"
                             : "Premium experiences, 1-on-1 access",
                         ]
                       ).join(", ")}
