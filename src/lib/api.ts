@@ -1,7 +1,7 @@
-// Dummy API helpers for development
+// API client with retry + timeouts for backend/mainC.py service
 
 const MEMBERSHIP_API_URL = import.meta.env.VITE_MEMBERSHIP_API_URL || "http://localhost:8001";
-const CONTENT_API_URL = import.meta.env.VITE_CONTENT_API_URL || "http://localhost:8000";
+const CONTENT_API_URL = import.meta.env.VITE_CONTENT_API_URL || "http://localhost:8001";
 const API_TOKEN = import.meta.env.VITE_API_TOKEN;
 
 function getHeaders(isJson = true) {
@@ -15,6 +15,8 @@ export type Tier = {
   id: string;
   name: string;
   price: number;
+  benefits?: string[];
+  subscriberCount?: number;
 };
 
 const RETRYABLE_STATUS = new Set([502, 503, 504]);
@@ -58,18 +60,22 @@ async function fetchWithRetry(input: RequestInfo | URL, init: RequestInit & { ti
 }
 
 export const api = {
+  // Membership Service API calls (使用 /membership 前綴)
   getTiers: async (creatorId: string): Promise<Tier[]> => {
-    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/tiers/${creatorId}`, {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/tiers/${creatorId}`, {
       headers: getHeaders(false),
     });
     return res.json();
   },
+
+  // Content Service API calls (使用 /content 前綴)
   getCreatorContent: async (creatorId: string): Promise<any[]> => {
     const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/content/creator/${creatorId}`, {
       headers: getHeaders(false),
     });
     return res.json();
   },
+
   uploadContent: async (formData: FormData): Promise<void> => {
     await fetchWithRetry(`${MEMBERSHIP_API_URL}/content/`, {
       method: "POST",
@@ -77,51 +83,110 @@ export const api = {
       body: formData,
     });
   },
+
+  // Generic API methods with proper service routing
   get: async (url: string, service: "membership" | "content" = "membership") => {
-    const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetchWithRetry(`${base}${url}`, { headers: getHeaders() });
+    const base = MEMBERSHIP_API_URL; // 兩個服務都運行在同一個端口
+    // 根據服務類型添加正確的前綴
+    const fullUrl = service === "membership" 
+      ? `${base}/membership${url}` 
+      : `${base}/content${url}`;
+    const res = await fetchWithRetry(fullUrl, { headers: getHeaders() });
     return res.json();
   },
+
   post: async (url: string, data: any, service: "membership" | "content" = "membership") => {
-    const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetchWithRetry(`${base}${url}`, {
+    const base = MEMBERSHIP_API_URL; // 兩個服務都運行在同一個端口
+    // 根據服務類型添加正確的前綴
+    const fullUrl = service === "membership" 
+      ? `${base}/membership${url}` 
+      : `${base}/content${url}`;
+    const res = await fetchWithRetry(fullUrl, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(data),
     });
     return res.json();
   },
+
   put: async (url: string, data: any, service: "membership" | "content" = "membership") => {
-    const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetchWithRetry(`${base}${url}`, {
+    const base = MEMBERSHIP_API_URL; // 兩個服務都運行在同一個端口
+    // 根據服務類型添加正確的前綴
+    const fullUrl = service === "membership" 
+      ? `${base}/membership${url}` 
+      : `${base}/content${url}`;
+    const res = await fetchWithRetry(fullUrl, {
       method: "PUT",
       headers: getHeaders(),
       body: JSON.stringify(data),
     });
     return res.json();
   },
+
   delete: async (url: string, service: "membership" | "content" = "membership") => {
-    const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetchWithRetry(`${base}${url}`, {
+    const base = MEMBERSHIP_API_URL; // 兩個服務都運行在同一個端口
+    // 根據服務類型添加正確的前綴
+    const fullUrl = service === "membership" 
+      ? `${base}/membership${url}` 
+      : `${base}/content${url}`;
+    const res = await fetchWithRetry(fullUrl, {
       method: "DELETE",
       headers: getHeaders(),
     });
     return res.json();
   },
+
+  // Legacy methods for backward compatibility
   postJson: async (url: string, data: any, service: "membership" | "content" = "membership") => {
-    const base = service === "membership" ? MEMBERSHIP_API_URL : CONTENT_API_URL;
-    const res = await fetchWithRetry(`${base}${url}`, {
+    const base = MEMBERSHIP_API_URL; // 兩個服務都運行在同一個端口
+    // 根據服務類型添加正確的前綴
+    const fullUrl = service === "membership" 
+      ? `${base}/membership${url}` 
+      : `${base}/content${url}`;
+    const res = await fetchWithRetry(fullUrl, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(data),
     });
     return res.json();
   },
+
   upload: async (url: string, formData: FormData) => {
-    const res = await fetchWithRetry(`${CONTENT_API_URL}${url}`, {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/content${url}`, {
       method: "POST",
       headers: API_TOKEN ? { "Authorization": `Bearer ${API_TOKEN}` } : {},
       body: formData,
+    });
+    return res.json();
+  },
+
+  // Additional helper methods for membership service
+  getKYCStatus: async (creatorId: string) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/kyc/status/${creatorId}`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  triggerKYC: async (creatorId: string) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/kyc/verify/${creatorId}`, {
+      method: "POST",
+      headers: getHeaders(),
+    });
+    return res.json();
+  },
+
+  getDashboard: async (creatorId: string) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/dashboard/${creatorId}`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  triggerPayout: async (creatorId: string) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/payout/${creatorId}`, {
+      method: "POST",
+      headers: getHeaders(),
     });
     return res.json();
   },

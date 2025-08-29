@@ -13,7 +13,8 @@ export function useTiers(creatorId: string) {
   const query = useQuery({
     queryKey: ["tiers", creatorId],
     queryFn: async () => {
-      const data = await api.get(`/tiers/${creatorId}`);
+      // 使用正確的 membership 服務端點
+      const data = await api.get(`/tiers/${creatorId}`, "membership");
       return Array.isArray(data) ? (data as TierRecord[]) : (data?.tiers ?? []);
     },
     staleTime: 10_000,

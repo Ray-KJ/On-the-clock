@@ -35,10 +35,14 @@ const CreatorProfile = () => {
   const queryClient = useQueryClient();
   const subscribeMutation = useMutation({
     mutationFn: async (tierId: string) => {
-      return api.postJson(`/subscribe_json`, {
-        user_id: "demo-user",
-        tier_id: tierId,
-      });
+      return api.postJson(
+        `/subscribe_json`,
+        {
+          user_id: "demo-user",
+          tier_id: tierId,
+        },
+        "membership"
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tiers", creator.id] });

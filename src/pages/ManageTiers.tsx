@@ -42,7 +42,7 @@ const ManageTiers = () => {
     isError,
   } = useQuery({
     queryKey: ["tiers", creatorId],
-    queryFn: () => api.get(`/tiers/${creatorId}`),
+    queryFn: () => api.get(`/tiers/${creatorId}`, "membership"),
   });
 
   // Ensure tiers is always an array
@@ -53,7 +53,8 @@ const ManageTiers = () => {
       name: string;
       price: number;
       benefits?: string[];
-    }) => api.post(`/tiers/`, { creator_id: creatorId, ...payload }),
+    }) =>
+      api.post(`/tiers/`, { creator_id: creatorId, ...payload }, "membership"),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["tiers", creatorId] }),
   });
@@ -65,17 +66,22 @@ const ManageTiers = () => {
       price?: number;
       benefits?: string[];
     }) =>
-      api.put(`/tiers/${vars.tierId}`, {
-        name: vars.name,
-        price: vars.price,
-        benefits: vars.benefits,
-      }),
+      api.put(
+        `/tiers/${vars.tierId}`,
+        {
+          name: vars.name,
+          price: vars.price,
+          benefits: vars.benefits,
+        },
+        "membership"
+      ),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["tiers", creatorId] }),
   });
 
   const deleteTierMutation = useMutation({
-    mutationFn: (tierId: string) => api.delete(`/tiers/${tierId}`),
+    mutationFn: (tierId: string) =>
+      api.delete(`/tiers/${tierId}`, "membership"),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["tiers", creatorId] }),
   });

@@ -43,8 +43,8 @@ const KYCStatus = () => {
   const { data: kycData, isLoading } = useQuery({
     queryKey: ["kyc", CREATOR_ID],
     queryFn: async (): Promise<KYCData> => {
-      // Replace with real API call: return api.getKYCStatus(CREATOR_ID);
-      return { status: "not_started", documents: [] };
+      // 使用真實的 API 調用
+      return api.getKYCStatus(CREATOR_ID);
     },
     staleTime: 5 * 60 * 1000,
   });
