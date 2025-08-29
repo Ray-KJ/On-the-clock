@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,26 +8,118 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Navigation } from "@/components/Navigation";
-import { mockCreators } from "@/lib/mockData";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 import {
-  Heart,
   Play,
-  Clock,
-  Crown,
   Users,
+  Heart,
+  Crown,
+  Star,
+  ShoppingBag,
+  DollarSign,
+  TrendingUp,
   Calendar,
-  ExternalLink,
+  Clock,
+  Eye,
+  ThumbsUp,
+  MessageCircle,
+  Share2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useTiers } from "@/hooks/use-tiers";
+
+const CREATOR_ID = "creator1";
 
 const ConsumerDashboard = () => {
-  const creator = mockCreators[0];
-  const { tiers } = useTiers(creator.id);
+  const [selectedCreator, setSelectedCreator] = useState(CREATOR_ID);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: creators = [] } = useQuery({
+    queryKey: ["creators"],
+    queryFn: () => [
+      {
+        id: "creator1",
+        name: "Alex Chen",
+        username: "@alexchen",
+        avatar:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+        description: "Tech enthusiast and coding instructor",
+        subscribers: "125K",
+        verified: true,
+        category: "Technology",
+        lastActive: "2 hours ago",
+        totalVideos: 342,
+        totalLikes: "2.8M",
+        engagementRate: "8.2%",
+      },
+    ],
+  });
+
+  const { data: tiers = [] } = useQuery({
+    queryKey: ["tiers", selectedCreator],
+    queryFn: () => api.getTiers(selectedCreator),
+  });
+
+  const { data: oneTimePurchases = [] } = useQuery({
+    queryKey: ["one-time-purchases", selectedCreator],
+    queryFn: () => api.getOneTimePurchases(selectedCreator),
+  });
+
+  const { data: content = [] } = useQuery({
+    queryKey: ["content", selectedCreator],
+    queryFn: () => api.getCreatorContent(selectedCreator),
+  });
+
+  const subscribeMutation = useMutation({
+    mutationFn: (tierId: string) =>
+      api.postJson(
+        `/subscribe_json`,
+        {
+          user_id: "demo-user",
+          tier_id: tierId,
+        },
+        "membership"
+      ),
+    onSuccess: () => {
+      toast({
+        title: "Subscription Successful!",
+        description: "You now have access to exclusive content.",
+      });
+      // Invalidate all related queries to ensure data consistency across all pages
+      queryClient.invalidateQueries({ queryKey: ["tiers", selectedCreator] });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", selectedCreator],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["one-time-purchases", selectedCreator],
+      });
+    },
+  });
+
+  const purchaseMutation = useMutation({
+    mutationFn: (purchaseId: string) =>
+      api.purchaseItem(purchaseId, "demo-user"),
+    onSuccess: () => {
+      toast({
+        title: "Purchase Successful!",
+        description: "You now have access to this exclusive item.",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["one-time-purchases", selectedCreator],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", selectedCreator],
+      });
+    },
+  });
+
+  const creator = creators.find((c) => c.id === selectedCreator);
+
+  if (!creator) return <div>Creator not found</div>;
 
   return (
     <div className="min-h-screen bg-background">
@@ -32,239 +127,314 @@ const ConsumerDashboard = () => {
 
       <main className="ml-64 p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+          {/* Creator Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              My Subscriptions
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your creator subscriptions and exclusive content
-            </p>
-          </div>
-
-          {/* Creator Card */}
-          <Card className="mb-8 bg-gradient-card border-border shadow-card">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-16 h-16">
-                    <AvatarImage src={creator.avatar} alt={creator.name} />
-                    <AvatarFallback>
-                      {creator.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-xl font-bold text-foreground">
-                        {creator.name}
-                      </h2>
-                      {creator.verified && (
-                        <Badge className="bg-gradient-primary text-white">
-                          <Crown className="w-3 h-3 mr-1" />
-                          Verified
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-secondary font-medium">
-                      {creator.username}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {creator.subscribers} followers
-                    </p>
-                  </div>
+            <div className="flex items-start gap-6">
+              <Avatar className="w-24 h-24 border-4 border-primary">
+                <AvatarImage src={creator.avatar} alt={creator.name} />
+                <AvatarFallback>
+                  {creator.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-3xl font-bold text-foreground">
+                    {creator.name}
+                  </h1>
+                  {creator.verified && (
+                    <Badge className="bg-gradient-primary text-white">
+                      <Crown className="w-3 h-3 mr-1" />
+                      Verified
+                    </Badge>
+                  )}
                 </div>
-                <Button asChild>
-                  <Link to={`/creator/${creator.id}`}>
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View Profile
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-foreground mb-4">{creator.description}</p>
-
-              {/* Current Subscription */}
-              <div className="bg-muted rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-foreground">
-                    Current Plan: {tiers[1]?.name ?? "Super Fan"}
-                  </h3>
-                  <Badge variant="secondary">Active</Badge>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    <span>Renewed Feb 15, 2024</span>
-                  </div>
+                <p className="text-xl text-secondary font-semibold mb-2">
+                  {creator.username}
+                </p>
+                <p className="text-muted-foreground mb-4">
+                  {creator.description}
+                </p>
+                <div className="flex items-center gap-6 text-sm">
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
-                    <span>${tiers[1]?.price ?? 9.99}/month</span>
+                    <span className="font-semibold">{creator.subscribers}</span>
+                    <span className="text-muted-foreground">followers</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Heart className="w-4 h-4 text-primary" />
+                    <span className="font-semibold">{creator.totalLikes}</span>
+                    <span className="text-muted-foreground">likes</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Play className="w-4 h-4" />
+                    <span className="font-semibold">{creator.totalVideos}</span>
+                    <span className="text-muted-foreground">videos</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <TrendingUp className="w-4 h-4" />
+                    <span className="font-semibold">
+                      {creator.engagementRate}
+                    </span>
+                    <span className="text-muted-foreground">engagement</span>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Recent Content */}
-            <div className="lg:col-span-2">
-              <Card className="bg-gradient-card border-border shadow-card">
-                <CardHeader>
-                  <CardTitle className="text-foreground">
-                    Exclusive Content
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    Latest videos for Super Fan members
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        title: "Behind the Scenes: NYC Shoot",
-                        duration: "12:34",
-                        tier: "Super Fan",
-                        views: "8.9K views",
-                        posted: "2 days ago",
-                      },
-                      {
-                        title: "Q&A: Your Questions Answered",
-                        duration: "25:17",
-                        tier: "Super Fan",
-                        views: "12.1K views",
-                        posted: "1 week ago",
-                      },
-                      {
-                        title: "Exclusive Dance Tutorial",
-                        duration: "18:45",
-                        tier: "Super Fan",
-                        views: "15.3K views",
-                        posted: "2 weeks ago",
-                      },
-                    ].map((video, index) => (
+          {/* Subscription Tiers */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              Subscription Tiers
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {tiers.map((tier, index) => (
+                <Card
+                  key={tier.id}
+                  className="bg-gradient-card border-border shadow-card"
+                >
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-4">
                       <div
-                        key={index}
-                        className="flex items-center gap-4 p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors cursor-pointer"
+                        className={`p-3 rounded-full ${
+                          index === 0
+                            ? "bg-primary text-primary-foreground"
+                            : index === 1
+                            ? "bg-secondary text-secondary-foreground"
+                            : "bg-gradient-primary text-white"
+                        }`}
                       >
-                        <div className="relative w-20 h-12 bg-gradient-primary rounded-lg flex items-center justify-center">
-                          <Play className="w-6 h-6 text-white" />
-                          <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded">
-                            {video.duration}
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium text-foreground">
-                            {video.title}
-                          </h3>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Badge variant="outline" className="text-xs">
-                              {video.tier}
-                            </Badge>
-                            <span>{video.views}</span>
-                            <span>•</span>
-                            <span>{video.posted}</span>
-                          </div>
-                        </div>
+                        {index === 0 ? (
+                          <Users className="w-5 h-5" />
+                        ) : index === 1 ? (
+                          <Star className="w-5 h-5" />
+                        ) : (
+                          <Crown className="w-5 h-5" />
+                        )}
                       </div>
-                    ))}
+                      <div>
+                        <CardTitle className="text-foreground">
+                          {tier.name}
+                        </CardTitle>
+                        <CardDescription>${tier.price}/month</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">
+                          Benefits:
+                        </h4>
+                        <ul className="space-y-1 text-sm">
+                          {(tier.benefits || []).map((benefit, idx) => (
+                            <li key={idx} className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                              <span className="text-muted-foreground">
+                                {benefit}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {tier.subscriberCount || 0} subscribers
+                        </span>
+                        <Button
+                          size="sm"
+                          className="bg-gradient-primary text-white"
+                          onClick={() => subscribeMutation.mutate(tier.id)}
+                        >
+                          Subscribe
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* One-Time Purchases */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              One-Time Purchases
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {oneTimePurchases.map((purchase) => (
+                <Card
+                  key={purchase.id}
+                  className="bg-gradient-card border-border shadow-card"
+                >
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 rounded-full bg-secondary text-secondary-foreground">
+                        <ShoppingBag className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-foreground">
+                          {purchase.name}
+                        </CardTitle>
+                        <CardDescription>
+                          ${purchase.price} (one-time)
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-muted-foreground mb-3">
+                          {purchase.description}
+                        </p>
+                        <Badge variant="outline" className="capitalize mb-3">
+                          {purchase.type}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {purchase.purchaseCount || 0} purchases
+                        </span>
+                        <Button
+                          size="sm"
+                          className="bg-gradient-primary text-white"
+                          onClick={() => purchaseMutation.mutate(purchase.id)}
+                        >
+                          Purchase
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Content */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              Recent Content
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {content.slice(0, 6).map((video) => (
+                <Card
+                  key={video.id}
+                  className="bg-gradient-card border-border shadow-card"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="aspect-video bg-muted rounded-lg mb-3 flex items-center justify-center">
+                      <Play className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <CardTitle className="text-lg">{video.title}</CardTitle>
+                    <CardDescription className="line-clamp-2">
+                      {video.description || "No description available"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Eye className="w-4 h-4" />
+                        <span>1.2K</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <ThumbsUp className="w-4 h-4" />
+                        <span>89</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>12</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Share2 className="w-4 h-4" />
+                        <span>5</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Creator Stats */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              Creator Statistics
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className="bg-gradient-card border-border shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-full bg-primary/10">
+                      <Users className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">
+                        {creator.subscribers}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Total Followers
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-card border-border shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-full bg-secondary/10">
+                      <Play className="w-6 h-6 text-secondary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">
+                        {creator.totalVideos}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Total Videos
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-card border-border shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-full bg-primary/10">
+                      <Heart className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">
+                        {creator.totalLikes}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Total Likes
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-card border-border shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-full bg-secondary/10">
+                      <TrendingUp className="w-6 h-6 text-secondary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">
+                        {creator.engagementRate}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Engagement Rate
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Subscription Benefits */}
-            <Card className="bg-gradient-card border-border shadow-card">
-              <CardHeader>
-                <CardTitle className="text-foreground">Your Benefits</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  {tiers[1]?.name ?? "Super Fan"} membership perks
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {(
-                    tiers[1]?.benefits ?? [
-                      "Early access to videos",
-                      "Exclusive behind-the-scenes",
-                      "Fan badge",
-                      "Monthly Q&A sessions",
-                      "Custom shoutouts",
-                      "Discord access",
-                    ]
-                  ).map((benefit: string, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-primary" />
-                      <span className="text-foreground text-sm">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 pt-6 border-t border-border">
-                  <Button variant="outline" className="w-full">
-                    Upgrade to VIP
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full mt-2 text-destructive"
-                  >
-                    Cancel Subscription
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
-
-          {/* Upcoming Events */}
-          <Card className="mt-8 bg-gradient-card border-border shadow-card">
-            <CardHeader>
-              <CardTitle className="text-foreground">Upcoming Events</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Exclusive events for Super Fan members
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  {
-                    title: "Monthly Q&A Session",
-                    date: "March 15, 2024",
-                    time: "7:00 PM EST",
-                    type: "Live Stream",
-                  },
-                  {
-                    title: "Dance Workshop",
-                    date: "March 22, 2024",
-                    time: "3:00 PM EST",
-                    type: "Interactive",
-                  },
-                ].map((event, index) => (
-                  <div key={index} className="p-4 bg-muted rounded-lg">
-                    <h3 className="font-medium text-foreground mb-2">
-                      {event.title}
-                    </h3>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{event.date}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>{event.time}</span>
-                      </div>
-                      <Badge variant="secondary" className="mt-2">
-                        {event.type}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

@@ -1,16 +1,11 @@
 from fastapi import APIRouter, Form, HTTPException
-from models import tiers_db, subscriptions_db, kyc_db
+from models import tiers_db, subscriptions_db, kyc_db, one_time_purchases_db
 
 router = APIRouter()
 
 @router.get("/tiers/{creator_id}")
 def get_tiers(creator_id: str):
     return tiers_db
-
-# @router.get("/lu")
-# def get_lu():
-#     print("lu")
-#     return "lu"
 
 @router.post("/tiers/")
 def create_tier(tier: dict):
@@ -32,6 +27,41 @@ def delete_tier(tier_id: str):
     global tiers_db
     tiers_db = [t for t in tiers_db if t["id"] != tier_id]
     return {"success": True}
+
+# One-time purchase endpoints
+@router.get("/one-time-purchases/{creator_id}")
+def get_one_time_purchases(creator_id: str):
+    return [p for p in one_time_purchases_db if p["creator_id"] == creator_id]
+
+@router.post("/one-time-purchases/")
+def create_one_time_purchase(purchase: dict):
+    purchase["id"] = f"purchase{len(one_time_purchases_db)+1}"
+    purchase["purchaseCount"] = 0
+    one_time_purchases_db.append(purchase)
+    print(f"Created one-time purchase: {purchase['name']}")
+    return purchase
+
+@router.put("/one-time-purchases/{purchase_id}")
+def update_one_time_purchase(purchase_id: str, purchase: dict):
+    for p in one_time_purchases_db:
+        if p["id"] == purchase_id:
+            p.update(purchase)
+            return p
+    raise HTTPException(status_code=404, detail="One-time purchase not found")
+
+@router.delete("/one-time-purchases/{purchase_id}")
+def delete_one_time_purchase(purchase_id: str):
+    global one_time_purchases_db
+    one_time_purchases_db = [p for p in one_time_purchases_db if p["id"] != purchase_id]
+    return {"success": True}
+
+@router.post("/one-time-purchases/{purchase_id}/purchase")
+def purchase_item(purchase_id: str, user_id: str = Form(...)):
+    for p in one_time_purchases_db:
+        if p["id"] == purchase_id:
+            p["purchaseCount"] = p.get("purchaseCount", 0) + 1
+            return {"success": True, "purchase_id": purchase_id, "user_id": user_id}
+    raise HTTPException(status_code=404, detail="One-time purchase not found")
 
 @router.post("/subscribe/")
 def subscribe(user_id: str = Form(...), tier_id: str = Form(...)):
@@ -71,11 +101,19 @@ def get_kyc_status(creator_id: str):
 
 @router.get("/dashboard/{creator_id}")
 def get_dashboard(creator_id: str):
-    # Example stats
+    # Example stats including one-time purchases
+    one_time_revenue = sum(p["price"] * p.get("purchaseCount", 0) for p in one_time_purchases_db if p["creator_id"] == creator_id)
+    
+    # Ensure subscriberCount is not None and calculate safely
+    total_subscribers = sum(t.get("subscriberCount", 0) or 0 for t in tiers_db)
+    subscription_revenue = sum(t["price"] * (t.get("subscriberCount", 0) or 0) for t in tiers_db)
+    
     return {
-        "total_subscribers": sum(t["subscriberCount"] for t in tiers_db),
+        "total_subscribers": total_subscribers,
         "total_tiers": len(tiers_db),
-        "revenue": sum(t["price"] * t["subscriberCount"] for t in tiers_db),
+        "revenue": subscription_revenue,
+        "one_time_revenue": one_time_revenue,
+        "total_revenue": subscription_revenue + one_time_revenue,
     }
 
 @router.post("/payout/{creator_id}")

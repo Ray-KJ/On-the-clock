@@ -43,11 +43,35 @@ const UploadVideo = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: oneTimePurchases = [], isLoading: purchasesLoading } = useQuery(
+    {
+      queryKey: ["one-time-purchases", CREATOR_ID],
+      queryFn: () => api.getOneTimePurchases(CREATOR_ID),
+      staleTime: 5 * 60 * 1000,
+    }
+  );
+
   const { data: existingContent = [], isLoading: contentLoading } = useQuery({
     queryKey: ["content", CREATOR_ID],
     queryFn: () => api.getCreatorContent(CREATOR_ID),
     staleTime: 2 * 60 * 1000,
   });
+
+  // Combine tiers and one-time purchases for the dropdown
+  const allAccessOptions = [
+    ...tiers.map((tier) => ({
+      id: `tier_${tier.id}`,
+      name: `${tier.name} ($${tier.price}/month)`,
+      type: "subscription",
+      price: tier.price,
+    })),
+    ...oneTimePurchases.map((purchase) => ({
+      id: `purchase_${purchase.id}`,
+      name: `${purchase.name} ($${purchase.price} one-time)`,
+      type: "one-time",
+      price: purchase.price,
+    })),
+  ];
 
   const uploadMutation = useMutation({
     mutationFn: (formData: FormData) => api.uploadContent(formData),
@@ -207,16 +231,15 @@ const UploadVideo = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="minTier">Minimum Tier Required *</Label>
+                    <Label htmlFor="minTier">Access Control *</Label>
                     <Select value={minTier} onValueChange={setMinTier}>
                       <SelectTrigger className="mt-2">
                         <SelectValue placeholder="Select minimum tier for access" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="public">Public (Free)</SelectItem>
-                        {tiers.map((tier) => (
-                          <SelectItem key={tier.id} value={tier.id}>
-                            {tier.name} (${tier.price}/month)
+                        {allAccessOptions.map((option) => (
+                          <SelectItem key={option.id} value={option.id}>
+                            {option.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

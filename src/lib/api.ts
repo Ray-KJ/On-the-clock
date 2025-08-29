@@ -190,4 +190,57 @@ export const api = {
     });
     return res.json();
   },
+
+  // One-time purchase methods
+  getOneTimePurchases: async (creatorId: string) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/one-time-purchases/${creatorId}`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  createOneTimePurchase: async (purchase: any) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/one-time-purchases/`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(purchase),
+    });
+    return res.json();
+  },
+
+  updateOneTimePurchase: async (purchaseId: string, purchase: any) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/one-time-purchases/${purchaseId}`, {
+      method: "PUT",
+      headers: getHeaders(),
+      body: JSON.stringify(purchase),
+    });
+    return res.json();
+  },
+
+  deleteOneTimePurchase: async (purchaseId: string) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/one-time-purchases/${purchaseId}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    return res.json();
+  },
+
+  purchaseItem: async (purchaseId: string, userId: string) => {
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/membership/one-time-purchases/${purchaseId}/purchase`, {
+      method: "POST",
+      headers: API_TOKEN ? { Authorization: `Bearer ${API_TOKEN}` } : {},
+      body: formData,
+    });
+    return res.json();
+  },
+
+  // ML model methods
+  getContentMLScore: async (contentId: string) => {
+    const res = await fetchWithRetry(`${MEMBERSHIP_API_URL}/content/ml-score/${contentId}`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
 };

@@ -20,6 +20,8 @@ import {
   Shield,
   Clock,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 const RevenuePage = () => {
   // --- Tiers source (live via API with fallback) ---
@@ -130,6 +132,39 @@ const RevenuePage = () => {
     creatorRevenue: Math.round(t.revenue * currentGrossScale * currentSplit),
   }));
 
+  const { data: dashboardData } = useQuery({
+    queryKey: ["dashboard", creatorId],
+    queryFn: () => api.getDashboard(creatorId),
+  });
+
+  const { data: oneTimePurchases = [] } = useQuery({
+    queryKey: ["one-time-purchases", creatorId],
+    queryFn: () => api.getOneTimePurchases(creatorId),
+  });
+
+  // Calculate one-time purchase revenue
+  const oneTimeRevenue = oneTimePurchases.reduce((total, purchase) => {
+    return total + purchase.price * (purchase.purchaseCount || 0);
+  }, 0);
+
+  // Use real data from API instead of mock data
+  const realTotalRevenue = dashboardData?.total_revenue || 0;
+  const realSubscriptionRevenue = dashboardData?.revenue || 0;
+  const realOneTimeRevenue = dashboardData?.one_time_revenue || 0;
+
+  // Use real data for calculations
+  const realSmoothed = [
+    realTotalRevenue * 0.25,
+    realTotalRevenue * 0.25,
+    realTotalRevenue * 0.25,
+    realTotalRevenue * 0.25,
+  ];
+
+  // Add 6% uplift to smoothed payouts
+  const realTotalSmoothed =
+    realSmoothed.reduce((sum, amount) => sum + amount, 0) * 1.06;
+  const realCurrentMonthIndex = new Date().getMonth() % 4;
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -157,7 +192,7 @@ const RevenuePage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-foreground">
-                  ${totalRevenue.toLocaleString()}
+                  ${realTotalRevenue.toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center">
                   <TrendingUp className="h-3 w-3 mr-1" />
@@ -175,7 +210,7 @@ const RevenuePage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-foreground">
-                  ${totalSmoothed.toLocaleString()}
+                  ${realTotalSmoothed.toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center">
                   <ArrowUpRight className="h-3 w-3 mr-1" />
@@ -193,7 +228,7 @@ const RevenuePage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-foreground">
-                  ${smoothed[currentMonthIndex].toLocaleString()}
+                  ${realSmoothed[realCurrentMonthIndex].toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center">
                   <Calendar className="h-3 w-3 mr-1" />
