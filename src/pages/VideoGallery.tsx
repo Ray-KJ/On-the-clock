@@ -182,11 +182,13 @@ const VideoThumbnail = ({
   const getThumbnailImage = (name: string) => {
     const imageMap: { [key: string]: string } = {
       // Original 4 videos
-      React:
+      "React Tutorial for Beginners":
         "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      CSS: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      HTML: "https://images.unsplash.com/photo-1632882765546-1ee75f53becb?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      JavaScript:
+      "CSS Tutorial – Full Course for Beginners":
+        "https://images.unsplash.com/photo-1621839673705-6617adf9e890?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "Learn HTML in 2 minutes":
+        "https://images.unsplash.com/photo-1632882765546-1ee75f53becb?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "Learn JavaScript - Full Course for Beginners":
         "https://images.unsplash.com/photo-1583339793403-3d9b001b6008?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       // Free Videos
       "React Basics":
@@ -260,7 +262,7 @@ const VideoGallery = () => {
     // Original 4 videos
     {
       id: "1",
-      name: "React",
+      name: "React Tutorial for Beginners",
       links:
         "https://www.tiktok.com/@odahojr_dev/video/7417885638571134213?q=react&t=1756469300348",
       tiktokId: "7515754084410952967",
@@ -274,7 +276,7 @@ const VideoGallery = () => {
     },
     {
       id: "2",
-      name: "CSS",
+      name: "CSS Tutorial – Full Course for Beginners",
       links:
         "https://www.tiktok.com/@codetheworld.io/video/7277023138456538375?q=css&t=1756469316434",
       tiktokId: "7515754084410952968",
@@ -288,7 +290,7 @@ const VideoGallery = () => {
     },
     {
       id: "3",
-      name: "HTML",
+      name: "Learn HTML in 2 minutes",
       links:
         "https://www.tiktok.com/@thecodedonkey/video/7267611793382558977?q=html&t=1756469331327",
       tiktokId: "7515754084410952969",
@@ -302,7 +304,7 @@ const VideoGallery = () => {
     },
     {
       id: "4",
-      name: "JavaScript",
+      name: "Learn JavaScript - Full Course for Beginners",
       links:
         "https://www.tiktok.com/@devslopes/video/7184676171588668715?q=Javascript&t=1756469345593",
       tiktokId: "7515754084410952970",
