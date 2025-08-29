@@ -85,7 +85,6 @@
 - **Hero Creator Image**: `src/assets/hero-creator.jpg`
 - **Unsplash Photos**: Video thumbnail images
 - **Custom Icons**: Lucide React icon library
-- **Favicon**: `public/favicon.ico`
 
 ### Design Elements
 
