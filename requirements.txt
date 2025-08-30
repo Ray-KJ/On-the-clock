@@ -1,0 +1,14 @@
+# FastAPI - Web framework
+fastapi==0.104.1
+
+# ASGI server for running FastAPI
+uvicorn[standard]==0.24.0
+
+# Form data processing
+python-multipart==0.0.6
+
+# Data validation and serialization
+pydantic==2.5.0
+
+# CORS middleware support
+fastapi-cors==0.0.6
