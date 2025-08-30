@@ -8,6 +8,36 @@ Instead of relying on a gifting-based system, Tierflow enables creators to creat
 
 This model provides significant benefits: it reduces money laundering risks by tying payments to specific, verified benefits and promotes more robust KYC/AML procedures. It also decreases revenue volatility for creators, encouraging them to create high-quality content and reducing churn risk. For consumers, it deepens the creator-fan relationship by providing more tangible value and exclusive experiences.
 
+## 🎯 Problem Statement
+
+### Challenges in Current Value Sharing Mechanism and Creator Economy
+
+Designing a fair and effective reward mechanism is complex. Issues such as unfairness, regulatory imcompliance, and fraud often lead to misaligned incentives, under-compensated creators, and reduced ecosystem engagement. Below are several critical challenges for creators and platforms:
+
+
+1. **Money-laundering risks**: Under the current gifting mechanism, transactions are often small, numerous, and spontaneous, making it difficult to detect suspicious patterns and an easy way to disguise a payment for an illicit service
+2. **Unfair Value-Sharing Mechanisms**: A uniform split ratio between creators and platforms, regardless of content quality, creates unfairness
+3. **Value Transfer Pathways**: Consumers' gifting is not tied to specific, publicly defined benefits, making it susceptible to illicit financial activities
+4. **Quality Recognition**: There is a lack of systematic, performance-driven quality assessment for content, leading to potential undercompensated creators
+5. **Monetization and revenue instability**: No alternative ways (other than the gifting system) to monetize limits creator monetization potential. This could lead to creator churn. Gifting by nature is more volatile and leads to creator revenue instability.
+
+### Our Solution
+
+**Tierflow** addresses these challenges through:
+
+- **AML (Anti-Money Laundering) & Anti-Fraud Prevention**: We ensure a secure and compliant ecosystem by requiring robust KYC for recurring payments and tying transactions to specific, verifiable benefits. Smoothed return over a period of time also makes the platform a less viable tool for money laundering
+- **Profit-Sharing Mechanisms**: Our performance-driven model intelligently compensates creators based on content quality and engagement, ensuring fair rewards for top performers. (50%-75%) The platform's payout smoothing system also provides creators with a predictable and stable income, reducing financial instability
+- **Value Transfer Pathways**: Consumers can contribute directly through Tiered Memberships and exclusive content purchases, creating a clear and auditable flow of value from the consumer to the creator.
+- **Alternative ways to monetize**: A single platform for subscription tiers, one-time purchases, and access to special events and interactions. More monetization methods allow creator to deepen their relationship with consumers and reward from their fanbase. Platforms could thus retain top creators and their content within platforms, improving overall engagement
+- **Analytics Dashboard**: The dashboard provides a transparent view of real-time analytics on earnings and subscriber growth, allowing creators to understand their performance and the value they are generating
+
+### Target Impact
+
+- **Reduce Money Laundering Risk**: Through KYC for recurring payments and tying transactions to specific, verifiable benefits.  it becomes significantly harder to use the platform for illicit financial activities. The smoothed return over time further reduces the platform's viability for large, rapid money transfers
+- **Fair Value-Sharing Mechanism Rewards Top Creators and Contents**: Our Profit-Sharing Mechanisms and Payout Smoothing directly tackle creator income volatility and undercompensated top creators. Instead of relying on unpredictable gifts, creators receive rewards based on a performance-driven model and can opt to smooth their income over time, providing a stable and predictable revenue stream. This encourages long-term commitment and high-quality content production
+- **Optimizing Monetization**: The Alternative ways to monetize feature expands beyond a single gifting model. Creators can build their income through diverse methods like tiered memberships and exclusive content sales, deepening their relationship with their fanbase. This not only increases revenue potential for creators but also helps the platform retain top talent and their content, improving overall engagement.
+- **Streamline Operations**: Centralized management of all revenue streams
+
 ## ✨ Features & Functionality
 
 ### 🎬 Content Management
@@ -122,36 +152,6 @@ This model provides significant benefits: it reduces money laundering risks by t
 - **Shadcn/ui**: Button, Card, Dialog, Form, Navigation components
 - **Custom Components**: RevenueChart, VideoThumbnail, Navigation
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
-
-## 🎯 Problem Statement
-
-### Challenges in Current Value Sharing Mechanism and Creator Economy
-
-Designing a fair and effective reward mechanism is complex. Issues such as unfairness, regulatory imcompliance, and fraud often lead to misaligned incentives, under-compensated creators, and reduced ecosystem engagement. Below are several critical challenges for creators and platforms:
-
-
-1. **Money-laundering risks**: Under the current gifting mechanism, transactions are often small, numerous, and spontaneous, making it difficult to detect suspicious patterns and an easy way to disguise a payment for an illicit service
-2. **Unfair Value-Sharing Mechanisms**: A uniform split ratio between creators and platforms, regardless of content quality, creates unfairness
-3. **Value Transfer Pathways**: Consumers' gifting is not tied to specific, publicly defined benefits, making it susceptible to illicit financial activities
-4. **Quality Recognition**: There is a lack of systematic, performance-driven quality assessment for content, leading to potential undercompensated creators
-5. **Monetization and revenue instability**: No alternative ways (other than the gifting system) to monetize limits creator monetization potential. This could lead to creator churn. Gifting by nature is more volatile and leads to creator revenue instability.
-
-### Our Solution
-
-**Tierflow** addresses these challenges through:
-
-- **AML (Anti-Money Laundering) & Anti-Fraud Prevention**: We ensure a secure and compliant ecosystem by requiring robust KYC for recurring payments and tying transactions to specific, verifiable benefits. Smoothed return over a period of time also makes the platform a less viable tool for money laundering
-- **Profit-Sharing Mechanisms**: Our performance-driven model intelligently compensates creators based on content quality and engagement, ensuring fair rewards for top performers. (50%-75%) The platform's payout smoothing system also provides creators with a predictable and stable income, reducing financial instability
-- **Value Transfer Pathways**: Consumers can contribute directly through Tiered Memberships and exclusive content purchases, creating a clear and auditable flow of value from the consumer to the creator.
-- **Alternative ways to monetize**: A single platform for subscription tiers, one-time purchases, and access to special events and interactions. More monetization methods allow creator to deepen their relationship with consumers and reward from their fanbase. Platforms could thus retain top creators and their content within platforms, improving overall engagement
-- **Analytics Dashboard**: The dashboard provides a transparent view of real-time analytics on earnings and subscriber growth, allowing creators to understand their performance and the value they are generating
-
-### Target Impact
-
-- **Reduce Money Laundering Risk**: Through KYC for recurring payments and tying transactions to specific, verifiable benefits.  it becomes significantly harder to use the platform for illicit financial activities. The smoothed return over time further reduces the platform's viability for large, rapid money transfers
-- **Fair Value-Sharing Mechanism Rewards Top Creators and Contents**: Our Profit-Sharing Mechanisms and Payout Smoothing directly tackle creator income volatility and undercompensated top creators. Instead of relying on unpredictable gifts, creators receive rewards based on a performance-driven model and can opt to smooth their income over time, providing a stable and predictable revenue stream. This encourages long-term commitment and high-quality content production
-- **Optimizing Monetization**: The Alternative ways to monetize feature expands beyond a single gifting model. Creators can build their income through diverse methods like tiered memberships and exclusive content sales, deepening their relationship with their fanbase. This not only increases revenue potential for creators but also helps the platform retain top talent and their content, improving overall engagement.
-- **Streamline Operations**: Centralized management of all revenue streams
 
 ## 🚀 Getting Started
 
