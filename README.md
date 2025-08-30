@@ -181,8 +181,7 @@ npm install
 3. **Install backend dependencies**
 
 ```bash
-cd backend
-pip install fastapi uvicorn python-multipart
+pip install -r requirements.txt
 ```
 
 4. **Start the development servers**
