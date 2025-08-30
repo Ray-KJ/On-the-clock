@@ -30,6 +30,12 @@ import {
   MessageCircle,
   Share2,
 } from "lucide-react";
+import {
+  getFreeVideos,
+  getExclusiveVideos,
+  getPremiumVideos,
+  getThumbnailImage,
+} from "@/lib/mockData";
 
 const CREATOR_ID = "creator1";
 
@@ -265,44 +271,7 @@ const ConsumerDashboard = () => {
               Free Videos
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                {
-                  id: "free1",
-                  title: "Introduction to React Basics",
-                  duration: "15:23",
-                  views: "45.2K",
-                  posted: "1 week ago",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=300&h=200&fit=crop",
-                },
-                {
-                  id: "free2",
-                  title: "CSS Grid Layout Tutorial",
-                  duration: "22:18",
-                  views: "38.7K",
-                  posted: "2 weeks ago",
-                  thumbnail:
-                    "https://plus.unsplash.com/premium_photo-1680700308566-543a60569017?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-                {
-                  id: "free3",
-                  title: "JavaScript Fundamentals",
-                  duration: "18:45",
-                  views: "52.1K",
-                  posted: "3 weeks ago",
-                  thumbnail:
-                    "https://plus.unsplash.com/premium_photo-1683121716061-3faddf4dc504?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-                {
-                  id: "free4",
-                  title: "Web Development Tips",
-                  duration: "12:33",
-                  views: "29.8K",
-                  posted: "1 month ago",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-              ].map((video) => (
+              {getFreeVideos().map((video) => (
                 <Card
                   key={video.id}
                   className="bg-gradient-card border-border shadow-card hover:shadow-lg transition-shadow cursor-pointer"
@@ -310,19 +279,22 @@ const ConsumerDashboard = () => {
                   <CardHeader className="pb-3">
                     <div className="relative aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
                       <img
-                        src={video.thumbnail}
-                        alt={video.title}
+                        src={getThumbnailImage(video.name)}
+                        alt={video.name}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                         <Play className="w-8 h-8 text-white" />
                       </div>
                       <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                        {video.duration}
+                        {Math.floor(parseInt(video.watchtime) / 60000)}:
+                        {((parseInt(video.watchtime) % 60000) / 1000)
+                          .toString()
+                          .padStart(2, "0")}
                       </div>
                     </div>
                     <CardTitle className="text-base line-clamp-2">
-                      {video.title}
+                      {video.name}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -331,7 +303,7 @@ const ConsumerDashboard = () => {
                         <Eye className="w-4 h-4" />
                         <span>{video.views}</span>
                       </div>
-                      <span>{video.posted}</span>
+                      <span>{video.uploadDate}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -345,47 +317,7 @@ const ConsumerDashboard = () => {
               Exclusive Content
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                {
-                  id: "exclusive1",
-                  title: "Advanced React Patterns",
-                  duration: "28:15",
-                  tier: "Super Fan",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  isCrowdfunding: true,
-                },
-                {
-                  id: "exclusive2",
-                  title: "Code Review Secrets",
-                  duration: "35:42",
-                  views: "8.9K",
-                  posted: "1 week ago",
-                  tier: "Super Fan",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1556742044-3c52d6e88c62?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-                {
-                  id: "exclusive3",
-                  title: "Q&A Session: Your Questions",
-                  duration: "42:18",
-                  views: "15.7K",
-                  posted: "2 weeks ago",
-                  tier: "Super Fan",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1597733336794-12d05021d510?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-                {
-                  id: "exclusive4",
-                  title: "State Management",
-                  duration: "31:25",
-                  views: "9.4K",
-                  posted: "3 weeks ago",
-                  tier: "Super Fan",
-                  thumbnail:
-                    "https://plus.unsplash.com/premium_photo-1678566111481-8e275550b700?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-              ].map((video, index) => (
+              {getExclusiveVideos().map((video, index) => (
                 <Card
                   key={video.id}
                   className={`bg-gradient-card border-border shadow-card ${
@@ -397,8 +329,8 @@ const ConsumerDashboard = () => {
                   <CardHeader className="pb-3">
                     <div className="relative aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
                       <img
-                        src={video.thumbnail}
-                        alt={video.title}
+                        src={getThumbnailImage(video.name)}
+                        alt={video.name}
                         className={`w-full h-full object-cover ${
                           index === 0 ? "filter grayscale" : ""
                         }`}
@@ -420,17 +352,24 @@ const ConsumerDashboard = () => {
                         </div>
                       )}
                       <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                        {video.duration}
+                        {Math.floor(parseInt(video.watchtime) / 60000)}:
+                        {((parseInt(video.watchtime) % 60000) / 1000)
+                          .toString()
+                          .padStart(2, "0")}
                       </div>
                       <div className="absolute top-2 left-2 bg-gradient-primary text-white text-xs px-2 py-1 rounded">
-                        {video.tier}
+                        Super Fan
                       </div>
                     </div>
                     <CardTitle className="text-base line-clamp-2">
-                      {video.title}
+                      {video.name}
                     </CardTitle>
-                    {index === 0 && video.isCrowdfunding && (
-                      <div className="mt-2"></div>
+                    {index === 0 && (
+                      <div className="mt-2">
+                        <div className="text-right text-xs text-muted-foreground">
+                          🎯 3/10 集資專屬
+                        </div>
+                      </div>
                     )}
                   </CardHeader>
                   <CardContent>
@@ -449,7 +388,7 @@ const ConsumerDashboard = () => {
                           <Eye className="w-4 h-4" />
                           <span>{video.views}</span>
                         </div>
-                        <span>{video.posted}</span>
+                        <span>{video.uploadDate}</span>
                       </div>
                     )}
                   </CardContent>
@@ -464,40 +403,7 @@ const ConsumerDashboard = () => {
               Premium Content
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                {
-                  id: "locked1",
-                  title: "Advanced JavaScript",
-                  duration: "45:30",
-                  tier: "VIP Member",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-                {
-                  id: "locked2",
-                  title: "1-on-1 Code Review Session",
-                  duration: "60:00",
-                  tier: "VIP Member",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1556740714-a8395b3bf30f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-                {
-                  id: "locked3",
-                  title: "Exclusive Project Walkthrough",
-                  duration: "38:15",
-                  tier: "VIP Member",
-                  thumbnail:
-                    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-                {
-                  id: "locked4",
-                  title: "Live Workshop: Full-Stack Dev",
-                  duration: "90:00",
-                  tier: "VIP Member",
-                  thumbnail:
-                    "https://plus.unsplash.com/premium_photo-1661877737564-3dfd7282efcb?q=80&w=2100&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                },
-              ].map((video) => (
+              {getPremiumVideos().map((video) => (
                 <Card
                   key={video.id}
                   className="bg-gradient-card border-border shadow-card relative overflow-hidden"
@@ -505,8 +411,8 @@ const ConsumerDashboard = () => {
                   <CardHeader className="pb-3">
                     <div className="relative aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
                       <img
-                        src={video.thumbnail}
-                        alt={video.title}
+                        src={getThumbnailImage(video.name)}
+                        alt={video.name}
                         className="w-full h-full object-cover filter grayscale"
                       />
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -515,19 +421,22 @@ const ConsumerDashboard = () => {
                             <Crown className="w-4 h-4 text-white" />
                           </div>
                           <p className="text-white text-sm font-medium">
-                            {video.tier} Only
+                            VIP Member Only
                           </p>
                         </div>
                       </div>
                       <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                        {video.duration}
+                        {Math.floor(parseInt(video.watchtime) / 60000)}:
+                        {((parseInt(video.watchtime) % 60000) / 1000)
+                          .toString()
+                          .padStart(2, "0")}
                       </div>
                       <div className="absolute top-2 left-2 bg-gradient-primary text-white text-xs px-2 py-1 rounded">
-                        {video.tier}
+                        VIP Member
                       </div>
                     </div>
                     <CardTitle className="text-base line-clamp-2">
-                      {video.title}
+                      {video.name}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
