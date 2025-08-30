@@ -82,16 +82,9 @@
 
 ### Images
 
-- **Hero Creator Image**: `src/assets/hero-creator.jpg`
 - **Unsplash Photos**: Video thumbnail images
 - **Custom Icons**: Lucide React icon library
 
-### Design Elements
-
-- **Color Scheme**: Dark theme with accent colors
-- **Typography**: Modern, readable fonts via Tailwind
-- **Layout Components**: Responsive grid systems
-- **Interactive Elements**: Hover effects and animations
 
 ## 📚 Libraries & Dependencies
 
@@ -213,7 +206,6 @@ on-the-clock/
 │   └── assets/           # Static assets (hero-creator.jpg)
 ├── backend/               # Backend Python code
 │   ├── mainC.py          # Main FastAPI application
-│   ├── models.py          # Data models and ML functions
 │   ├── membership_service.py  # Membership API endpoints
 │   └── content_service.py     # Content API endpoints
 ├── public/                # Public assets (favicon, placeholder images)
