@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -43,6 +43,7 @@ const ConsumerDashboard = () => {
   const [selectedCreator, setSelectedCreator] = useState(CREATOR_ID);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: creators = [] } = useQuery({
     queryKey: ["creators"],
@@ -136,7 +137,10 @@ const ConsumerDashboard = () => {
           {/* Creator Header */}
           <div className="mb-8">
             <div className="flex items-start gap-6">
-              <Avatar className="w-24 h-24 border-4 border-primary">
+              <Avatar
+                className="w-24 h-24 border-4 border-primary cursor-pointer hover:scale-105 transition-transform duration-200"
+                onClick={() => navigate(`/live/${creator.id}`)}
+              >
                 <AvatarImage src={creator.avatar} alt={creator.name} />
                 <AvatarFallback>
                   {creator.name
@@ -364,13 +368,7 @@ const ConsumerDashboard = () => {
                     <CardTitle className="text-base line-clamp-2">
                       {video.name}
                     </CardTitle>
-                    {index === 0 && (
-                      <div className="mt-2">
-                        <div className="text-right text-xs text-muted-foreground">
-                          🎯 3/10 集資專屬
-                        </div>
-                      </div>
-                    )}
+                    {index === 0 && <div className="mt-2"></div>}
                   </CardHeader>
                   <CardContent>
                     {index === 0 ? (
